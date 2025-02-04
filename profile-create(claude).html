@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Profile | Validate</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff3399;
+            --secondary: #6600ff;
+            --accent: #f700ff;
+            --bg: #0a0014;
+            --text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-creation {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .form-container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 20%;
+            transition: width 0.5s ease;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .step.active {
+            display: block;
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .step-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .step-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 51, 153, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .form-select option {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text);
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .trait-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .trait-item {
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .trait-item:hover {
+            background: rgba(255, 51, 153, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .trait-item.selected {
+            background: linear-gradient(45deg, rgba(255, 51, 153, 0.2), rgba(102, 0, 255, 0.2));
+            border-color: var(--primary);
+        }
+
+        .custom-interests {
+            margin-top: 2rem;
+        }
+
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-height: 100px;
+        }
+
+        .tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 51, 153, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-next {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 51, 153, 0.3);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .photo-upload {
+            text-align: center;
+            padding: 2rem;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            margin: 2rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload:hover {
+            border-color: var(--primary);
+            background: rgba(255, 51, 153, 0.05);
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-creation">
+        <div class="form-container">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <!-- Step 1: Basic Info -->
+            <div class="step active" data-step="1">
+                <div class="step-header">
+                    <h2 class="step-title">Let's Get Started</h2>
+                    <p class="step-description">Tell us about yourself</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age</label>
+                    <input type="number" class="form-input" placeholder="Your age" min="18" max="120">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select">
+                        <option value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                        <option value="other">Other</option>
+                        <option value="prefer-not">Prefer not to say</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" placeholder="City, Country">
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-next" onclick="nextStep(1)">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Bio & Goals -->
+            <div class="step" data-step="2">
+                <div class="step-header">
+                    <h2 class="step-title">About You</h2>
+                    <p class="step-description">Share your story and what you're looking for</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-textarea" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Relationship Goals</label>
+                    <select class="form-select">
+                        <option value="">Select goal</option>
+                        <option value="long-term">Long-term relationship</option>
+                        <option value="casual">Casual dating</option>
+                        <option value="friendship">Friendship</option>
+                        <option value="marriage">Marriage</option>
+                        <option value="undecided">Still figuring it out</option>
+                    </select>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-back" onclick="prevStep(2)">Back</button>
+                    <button class="btn btn-next" onclick="nextStep(2)">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Interests -->
+            <div class="step" data-step="3">
+                <div class="step-header">
+                    <h2 class="step-title">Your Interests</h2>
+                    <p class="step-description">Select what you love (or add your own!)</p>
+                </div>
+                <div class="trait-grid">
+                    <!-- Lifestyle -->
+                    <div class="trait-item" onclick="toggleTrait(this)">Travel</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Fitness</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Cooking</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Photography</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Yoga</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Meditation</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Hiking</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Camping</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Foodie</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Wine Tasting</div>
+
+                    <!-- Arts & Culture -->
+                    <div class="trait-item" onclick="toggleTrait(this)">Reading</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Writing</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Art</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Music</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Dancing</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Theater</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Museums</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Film</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Fashion</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Poetry</div>
+
+                    <!-- Sports -->
+                    <div class="trait-item" onclick="toggleTrait(this)">Soccer</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Basketball</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Tennis</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Swimming</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Volleyball</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Cycling</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Running</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Climbing</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Skateboarding</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Surfing</div>
+
+                    <!-- Tech & Gaming -->
+                    <div class="trait-item" onclick="toggleTrait(this)">Gaming</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Coding</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Technology</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">VR/AR</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">AI</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Blockchain</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Robotics</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">3D Printing</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Streaming</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">E-sports</div>
+
+                    <!-- Nature & Pets -->
+                    <div class="trait-item" onclick="toggleTrait(this)">Gardening</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Pet Lover</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Bird Watching</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Nature</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Sustainability</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Conservation</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Astronomy</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Volunteering</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Animal Rights</div>
+                    <div class="trait-item" onclick="toggleTrait(this)">Plant Parent</div>
+                </div>
+
+                <div class="custom-interests">
+                    <label class="form-label">Add Custom Interests</label>
+                    <div class="tag-input" id="customInterests">
+                        <!-- Tags will be added here dynamically -->
+                    </div>
+                    <input type="text" class="form-input" id="customInterestInput" placeholder="Type and press Enter to add" onkeydown="handleCustomInterest(event)">
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-back" onclick="prevStep(3)">Back</button>
+                    <button class="btn btn-next" onclick="nextStep(3)">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Photos -->
+            <div class="step" data-step="4">
+                <div class="step-header">
+                    <h2 class="step-title">Add Your Photos</h2>
+                    <p class="step-description">Show your best self</p>
+                </div>
+                <div class="photo-upload" onclick="triggerFileUpload()">
+                    <div class="photo-upload-icon">📸</div>
+                    <p>Drop your photos here or click to upload</p>
+                    <p style="color: rgba(255,255,255,0.5); margin-top: 0.5rem;">Add at least 3 photos</p>
+                </div>
+                <div id="photoPreview" class="photo-preview">
+                    <!-- Photo previews will be added here -->
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-back" onclick="prevStep(4)">Back</button>
+                    <button class="btn btn-next" onclick="nextStep(4)">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Preferences -->
+            <div class="step" data-step="5">
+                <div class="step-header">
+                    <h2 class="step-title">Your Preferences</h2>
+                    <p class="step-description">Tell us what you're looking for</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age Range</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <input type="number" class="form-input" placeholder="Min age" min="18" max="120">
+                        <input type="number" class="form-input" placeholder="Max age" min="18" max="120">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Interested In</label>
+                    <select class="form-select" multiple>
+                        <option value="men">Men</option>
+                        <option value="women">Women</option>
+                        <option value="non-binary">Non-binary people</option>
+                        <option value="everyone">Everyone</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Maximum Distance</label>
+                    <input type="range" class="form-input" min="1" max="100" value="50">
+                    <p class="range-value">50 miles</p>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-back" onclick="prevStep(5)">Back</button>
+                    <button class="btn btn-next" onclick="nextStep(5)">Finish</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Success -->
+            <div class="step" data-step="6">
+                <div class="success-animation">
+                    <div class="success-icon">✨</div>
+                    <h2 class="step-title">Profile Created!</h2>
+                    <p class="step-description">Your journey to meaningful connections begins now</p>
+                    <button class="btn btn-next" style="margin-top: 2rem" onclick="window.location.href='/dashboard'">Go to Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.querySelector('.progress-fill').style.width = `${progress}%`;
+        }
+
+        function nextStep(step) {
+            const currentStepEl = document.querySelector(`.step[data-step="${step}"]`);
+            const nextStepEl = document.querySelector(`.step[data-step="${step + 1}"]`);
+            
+            currentStepEl.classList.remove('active');
+            nextStepEl.classList.add('active');
+            
+            currentStep = step + 1;
+            updateProgress();
+
+            // Scroll to top of form
+            document.querySelector('.form-container').scrollTop = 0;
+        }
+
+        function prevStep(step) {
+            const currentStepEl = document.querySelector(`.step[data-step="${step}"]`);
+            const prevStepEl = document.querySelector(`.step[data-step="${step - 1}"]`);
+            
+            currentStepEl.classList.remove('active');
+            prevStepEl.classList.add('active');
+            
+            currentStep = step - 1;
+            updateProgress();
+        }
+
+        function toggleTrait(element) {
+            element.classList.toggle('selected');
+        }
+
+        function handleCustomInterest(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = document.getElementById('customInterestInput');
+                const value = input.value.trim();
+                
+                if (value) {
+                    addCustomInterest(value);
+                    input.value = '';
+                }
+            }
+        }
+
+        function addCustomInterest(value) {
+            const container = document.getElementById('customInterests');
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.innerHTML = `
+                ${value}
+                <span class="tag-remove" onclick="removeCustomInterest(this)">×</span>
+            `;
+            container.appendChild(tag);
+        }
+
+        function removeCustomInterest(element) {
+            element.parentElement.remove();
+        }
+
+        function triggerFileUpload() {
+            // In a real implementation, this would trigger a file input
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.accept = 'image/*';
+            input.onchange = handleFileUpload;
+            input.click();
+        }
+
+        function handleFileUpload(event) {
+            // Handle file upload preview
+            console.log('Files selected:', event.target.files);
+        }
+
+        // Initialize GSAP animations
+        gsap.from('.form-container', {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            ease: 'power3.out'
+        });
+    </script>
+</body>
+</html>
