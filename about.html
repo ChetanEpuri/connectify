@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Same meta tags and styles as index.html -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover the story behind Validate - where technology meets human connection to revolutionize modern dating.">
+    <title>About VALIDATE | Redefining Digital Intimacy</title>
+    <!-- Same script links -->
+    <!-- Same style section -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loader (Same as index.html) -->
+    <div class="loader">
+        <div class="loader-content">
+            <div class="loader-text">Validate</div>
+            <div class="loader-progress">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="canvas-container"></div>
+
+    <nav class="navigation">
+        <div class="nav-wrapper">
+            <a href="#" class="logo">Validate</a>
+            <div class="menu">
+                <a href="index.html" class="menu-link">Home</a>
+                <a href="#mission" class="menu-link active">About</a>
+                <a href="#team" class="menu-link">Team</a>
+                <a href="#values" class="menu-link">Values</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Beyond Algorithms<span>Humanizing Digital Connections</span></h1>
+            <p class="hero-description">Born from neuroscience and advanced AI, Validate reimagines dating as a journey of authentic human discovery.</p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <h3>12M+</h3>
+                    <p>Meaningful Matches</p>
+                </div>
+                <div class="stat-card">
+                    <h3>93%</h3>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-line"></div>
+            <div class="scroll-indicator-text">Our Story</div>
+        </div>
+    </section>
+
+    <section class="section" id="mission">
+        <div class="section-content">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-badge">Our Origin</div>
+                    <div class="feature-content">
+                        <div class="feature-icon">🚀</div>
+                        <h3 class="feature-title">From Lab to Love</h3>
+                        <p>Founded in 2023 by behavioral scientists and AI researchers from Stanford's Human Connection Lab, Validate combines 7 years of relationship psychology research with cutting-edge machine learning.</p>
+                        <div class="feature-progress">
+                            <div class="feature-progress-bar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-badge">The Shift</div>
+                    <div class="feature-content">
+                        <div class="feature-icon">🧠</div>
+                        <h3 class="feature-title">Neuro-Matching™</h3>
+                        <p>Our proprietary compatibility system analyzes 143 cognitive and emotional markers, creating connections that spark both chemistry and lasting compatibility.</p>
+                        <div class="feature-stats">
+                            <div class="feature-stat">
+                                <h4>143</h4>
+                                <p>Compatibility Markers</p>
+                            </div>
+                            <div class="feature-stat">
+                                <h4>8D</h4>
+                                <p>Personality Mapping</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="parallax-section" id="team">
+        <div class="parallax-content">
+            <h2 class="parallax-title">The Architects of Trust</h2>
+            <p class="parallax-description">A multidisciplinary team redefining connection through technology</p>
+            <div class="parallax-cards">
+                <div class="team-card">
+                    <div class="preview-image" style="background-image: url('team-ceo.jpg')"></div>
+                    <h3>Dr. Elena Torres</h3>
+                    <p>CEO & Behavioral Scientist</p>
+                    <div class="team-bio">15 years researching relationship dynamics at Stanford's HCI Lab</div>
+                </div>
+                <div class="team-card">
+                    <div class="preview-image" style="background-image: url('team-cto.jpg')"></div>
+                    <h3>James Chen</h3>
+                    <p>CTO & AI Architect</p>
+                    <div class="team-bio">Machine learning pioneer with 8 patents in neural matching</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="experience-section" id="values">
+        <div class="experience-content">
+            <div class="experience-text">
+                <h2>Our Ethical Foundation</h2>
+                <p>Principles that power every connection</p>
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🔐</div>
+                    <h3>Radical Transparency</h3>
+                    <p>Open-source algorithms with user-controlled data</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">⚖️</div>
+                    <h3>Equal Representation</h3>
+                    <p>Gender-balanced matching systems</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌐</div>
+                    <h3>Global Standards</h3>
+                    <p>GDPR-compliant with military-grade encryption</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Same footer as index.html -->
+    <footer class="footer">
+        <!-- Footer content from index.html -->
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Validate</h3>
+                <p>Love Without Lies. Dating Without Doubt.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#press">Press</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Guarantee</h4>
+                    <ul>
+                        <li><a href="#promise">90-Day Match Promise</a></li>
+                        <li><a href="#success">Success Stories</a></li>
+                        <li><a href="#support">Member Support</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#privacy">Privacy</a></li>
+                        <li><a href="#terms">Terms</a></li>
+                        <li><a href="#cookies">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Validate – 417,921 Real Connections and Counting</p>
+        </div>
+    </footer>
+
+    <!-- Same script section with Three.js and GSAP animations -->
+    <script>
+                // Initialize all animations and interactions
+                document.addEventListener('DOMContentLoaded', () => {
+            // Register GSAP plugins
+            gsap.registerPlugin(ScrollTrigger);
+        
+            // Initialize loading animation
+            initLoader();
+        
+            // Initialize Three.js background
+            initThreeBackground();
+        
+            // Initialize scroll animations
+            initScrollAnimations();
+        });
+        
+        // Loading animation
+        function initLoader() {
+            const tl = gsap.timeline();
+        
+            tl.to('.loader-text', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power4.out'
+            })
+            .to('.loader-bar', {
+                width: '100%',
+                duration: 1.5,
+                ease: 'power4.inOut'
+            })
+            .to('.loader', {
+                yPercent: -100,
+                duration: 0.8,
+                ease: 'power4.inOut'
+            })
+            .from(['.hero-title', '.hero-description', '.cta-button', '.hero-subtext', '.scroll-indicator'], {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                stagger: 0.2,
+                ease: 'power4.out'
+            });
+        }
+        
+        // Three.js background animation
+        function initThreeBackground() {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.querySelector('.canvas-container').appendChild(renderer.domElement);
+
+    // Advanced Heart Shape Generation
+    function createRefinedHeartShape() {
+        const heartShape = new THREE.Shape();
+        
+        // More complex heart curve using mathematical heart equation
+        const a = 16;
+        const heartPath = (t) => {
+            const x = a * Math.pow(Math.sin(t), 3);
+            const y = -(
+                a/2 * Math.cos(t) - 
+                a/3 * Math.cos(2*t) - 
+                a/4 * Math.cos(3*t) - 
+                a/5 * Math.cos(4*t)
+            );
+            return { x, y };
+        };
+
+        // Generate path points
+        const points = [];
+        for(let t = 0; t <= Math.PI * 2; t += 0.1) {
+            points.push(new THREE.Vector2(
+                heartPath(t).x / 10, 
+                heartPath(t).y / 10
+            ));
+        }
+
+        heartShape.setFromPoints(points);
+        return heartShape;
+    }
+
+    const heartShape = createRefinedHeartShape();
+    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, {
+        depth: 0.05,  // Thinner depth for more delicate look
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelSegments: 5  // More bevel segments for smoother edges
+    });
+
+    const hearts = [];
+    const maxHearts = 200;  // Increased heart count
+
+    function createHeart() {
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0xff3399, 
+            transparent: true,
+            opacity: 0.6,
+            shininess: 50  // Added shine for more sophistication
+        });
+
+        const heart = new THREE.Mesh(heartGeometry, material);
+        
+        // More spread-out initial positions
+        heart.position.set(
+            (Math.random() - 0.5) * 15,
+            -5, 
+            (Math.random() - 0.5) * 15
+        );
+
+        // More varied rotation
+        heart.rotation.x = Math.random() * Math.PI * 2;
+        heart.rotation.y = Math.random() * Math.PI * 2;
+        heart.rotation.z = Math.random() * Math.PI * 2;
+
+        // More varied scaling
+        const scale = 0.05 + Math.random() * 0.3;
+        heart.scale.set(scale, scale, scale);
+
+        heart.userData = {
+            speed: 0.01 + Math.random() * 0.05,
+            rotationSpeed: {
+                x: (Math.random() - 0.5) * 0.05,
+                y: (Math.random() - 0.5) * 0.05,
+                z: (Math.random() - 0.5) * 0.05
+            }
+        };
+
+        scene.add(heart);
+        hearts.push(heart);
+
+        // Remove excess hearts
+        if (hearts.length > maxHearts) {
+            const oldestHeart = hearts.shift();
+            scene.remove(oldestHeart);
+        }
+    }
+
+    // Enhanced Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const pointLight1 = new THREE.PointLight(0xff3399, 1, 100);
+    pointLight1.position.set(10, 10, 10);
+    scene.add(pointLight1);
+
+    const pointLight2 = new THREE.PointLight(0x6600ff, 0.5, 100);
+    pointLight2.position.set(-10, -10, -10);
+    scene.add(pointLight2);
+
+    camera.position.z = 5;
+
+    // Refined Heart Generation
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDelta = Math.abs(scrollTop - lastScrollTop);
+
+        // More frequent heart generation
+        if (scrollDelta > 30) {
+            // Generate multiple hearts per scroll
+            for(let i = 0; i < 3; i++) {
+                createHeart();
+            }
+            lastScrollTop = scrollTop;
+        }
+    });
+
+    // Enhanced Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        hearts.forEach(heart => {
+            // More dynamic movement
+            heart.position.y += heart.userData.speed;
+            heart.position.x += Math.sin(Date.now() * 0.001) * 0.02;
+            heart.position.z += Math.cos(Date.now() * 0.001) * 0.02;
+
+            // More complex rotation
+            heart.rotation.x += heart.userData.rotationSpeed.x;
+            heart.rotation.y += heart.userData.rotationSpeed.y;
+            heart.rotation.z += heart.userData.rotationSpeed.z;
+
+            // Remove hearts that float too high
+            if (heart.position.y > 10) {
+                scene.remove(heart);
+                hearts.splice(hearts.indexOf(heart), 1);
+            }
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Responsive Resizing
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+}
+        
+        // Scroll animations
+        function initScrollAnimations() {
+            // Animate feature cards
+            gsap.utils.toArray('.feature-card').forEach((card, i) => {
+                ScrollTrigger.create({
+                    trigger: card,
+                    start: 'top bottom-=100',
+                    onEnter: () => {
+                        gsap.to(card, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 1,
+                            ease: 'power4.out',
+                            delay: i * 0.2
+                        });
+                    }
+                });
+            });
+        
+            // Animate parallax section
+            gsap.to('.parallax-section', {
+                scrollTrigger: {
+                    trigger: '.parallax-section',
+                    start: 'top bottom',
+                    onEnter: () => {
+                        gsap.to('.parallax-section', { opacity: 1, duration: 1 });
+                        gsap.to('.parallax-title', { opacity: 1, y: 0, duration: 1, delay: 0.2 });
+                        gsap.to('.parallax-description', { opacity: 1, y: 0, duration: 1, delay: 0.4 });
+                        gsap.to('.stat-card', { 
+                            opacity: 1, 
+                            y: 0, 
+                            duration: 1, 
+                            stagger: 0.2,
+                            delay: 0.6 
+                        });
+                    }
+                }
+            });
+        
+            // Animate experience section
+            gsap.to('.experience-section', {
+                scrollTrigger: {
+                    trigger: '.experience-section',
+                    start: 'top bottom',
+                    onEnter: () => {
+                        gsap.to('.experience-section', { opacity: 1, duration: 1 });
+                        gsap.to('.experience-text', { opacity: 1, x: 0, duration: 1, delay: 0.2 });
+                        gsap.to('.preview-card', { 
+                            opacity: 1, 
+                            x: 0, 
+                            duration: 1, 
+                            stagger: 0.2,
+                            delay: 0.4 
+                        });
+                    }
+                }
+            });
+
+            gsap.to('#features', {
+        scrollTrigger: {
+            trigger: '#features',
+            start: 'top center',
+            toggleActions: 'play none none reverse',
+            onEnter: () => {
+                gsap.to('.feature-card', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power2.out'
+                });
+            }
+        }
+    });
+        
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        }
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+            const scrollLine = document.querySelector('.scroll-line');
+
+            gsap.fromTo(scrollIndicator, 
+                { opacity: 0, x: -50 }, 
+                { 
+                    opacity: 1, 
+                    x: 0, 
+                    duration: 1, 
+                    delay: 2, 
+                    ease: 'power2.out' 
+                }
+            );
+
+            // Scroll Line Animation
+            ScrollTrigger.create({
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                onUpdate: self => {
+                    const progress = self.progress;
+                    gsap.to(scrollLine, {
+                        scaleX: 1 - progress,
+                        transformOrigin: 'right',
+                        duration: 0.5
+                    });
+                }
+            });
+
+            ScrollTrigger.batch('.team-card, .value-card', {
+            start: 'top bottom-=100',
+            onEnter: batch => gsap.to(batch, {
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: 'power2.out'
+            })
+        });
+
+    // Add parallax effect
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            
+            gsap.to(card, {
+                x: x * 20,
+                y: y * 20,
+                rotateX: -y * 10,
+                rotateY: x * 10,
+                duration: 1.5,
+                ease: 'power2.out'
+            });
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                x: 0,
+                y: 0,
+                rotateX: 0,
+                rotateY: 0,
+                duration: 1,
+                ease: 'elastic.out(1, 0.5)'
+            });
+        });
+    });
+
+    // Initialize progress bars
+    document.querySelectorAll('.feature-progress-bar').forEach(bar => {
+        const targetWidth = bar.style.width;
+        bar.style.width = '0';
+        bar.dataset.targetWidth = targetWidth;
+    });
+
+    document.querySelectorAll('.feature-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 15;
+        const rotateY = (centerX - x) / 15;
+        
+        card.style.transform = `perspective(1000px) 
+            rotateX(${rotateX}deg) 
+            rotateY(${rotateY}deg)
+            scale3d(1.05, 1.05, 1.05)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+});
+
+document.querySelector('.hero-link').addEventListener('mouseenter', function(e) {
+    const positions = [
+        // Perimeter positions
+        { x: '0%', y: '25%' },    // Left side
+        { x: '0%', y: '75%' },    
+        { x: '100%', y: '25%' },  // Right side
+        { x: '100%', y: '75%' },
+        { x: '25%', y: '0%' },    // Top
+        { x: '75%', y: '0%' },
+        { x: '25%', y: '100%' },  // Bottom
+        { x: '75%', y: '100%' },
+        // Diagonal positions
+        { x: '15%', y: '15%' },   // Corners
+        { x: '85%', y: '15%' },
+        { x: '15%', y: '85%' },
+        { x: '85%', y: '85%' }
+    ];
+
+    positions.forEach((basePos, i) => {
+        const heart = document.createElement('div');
+        heart.className = 'heart-3d';
+        heart.innerHTML = '❤️';
+        
+        // Add random offset within position area
+        const xOffset = Math.random() * 20 - 10;
+        const yOffset = Math.random() * 20 - 10;
+        
+        heart.style.cssText = `
+            left: calc(${basePos.x} + ${xOffset}px);
+            top: calc(${basePos.y} + ${yOffset}px);
+            animation-delay: ${i * 0.06}s;
+            font-size: ${1.2 + Math.random() * 0.8}rem;
+            filter: hue-rotate(${Math.random() * 40 - 20}deg)
+                    brightness(${100 + Math.random() * 40}%);
+        `;
+        
+        this.appendChild(heart);
+        setTimeout(() => heart.remove(), 1400);
+    });
+});
+        // Same JavaScript as index.html with adjusted selectors
+        // Update initialization for team cards and value cards
+       
+    </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Validate</title>
+    <style>
+        /* Keep existing CSS variables and base styles */
+        :root {
+            --primary: #ff3399;
+            --secondary: #6600ff;
+            --accent: #f700ff;
+            --bg: #0a0014;
+            --text: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        nav {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-icon {
+            cursor: pointer;
+            font-size: 1.5rem;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .nav-icon:hover {
+            opacity: 1;
+        }
+        /* Profile specific styles */
+        .profile-container {
+            max-width: 800px;
+            margin: 80px auto 0;
+            padding: 2rem;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .profile-photo-large {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .profile-photo-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-photo-upload {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-photo-large:hover .profile-photo-upload {
+            opacity: 1;
+        }
+
+        .profile-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .privacy-toggle {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .profile-field {
+            margin-bottom: 1.5rem;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+        }
+
+        .interests-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .interest-tag {
+            background: rgba(255, 51, 153, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .interest-tag:hover {
+            background: var(--primary);
+        }
+
+        .save-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 2rem;
+            transition: transform 0.3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Keep the same nav as dashboard -->
+    <nav>
+        <div class="nav-content">
+            <div class="logo">Validate</div>
+            <div class="nav-icons">
+                <a href="dashboard.html" class="nav-icon" title="Dashboard">🏠</a>
+                <div class="nav-icon" title="Messages">💬<span class="notification-badge">3</span></div>
+                <div class="nav-icon" title="Notifications">🔔<span class="notification-badge">5</span></div>
+                <div class="nav-icon" title="Settings">⚙️</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-photo-large">
+                <img src="/api/placeholder/200/200" alt="Your profile photo">
+                <div class="profile-photo-upload">Click to upload new photo</div>
+            </div>
+            <h1>Alex Parker</h1>
+            <p>📍 San Francisco, CA</p>
+        </div>
+
+        <div class="profile-section">
+            <div class="privacy-toggle">
+                <span>Profile Privacy</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+                <span>Public</span>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">
+                <h2>Basic Information</h2>
+                <button class="edit-btn">✏️</button>
+            </div>
+            <div class="profile-field">
+                <label class="field-label">Bio</label>
+                <textarea class="field-input" rows="4">Adventure seeker and tech enthusiast. Always looking for new experiences and connections.</textarea>
+            </div>
+            <div class="profile-field">
+                <label class="field-label">Age</label>
+                <input type="number" class="field-input" value="28">
+            </div>
+            <div class="profile-field">
+                <label class="field-label">Location</label>
+                <input type="text" class="field-input" value="San Francisco, CA">
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">
+                <h2>Interests</h2>
+                <button class="edit-btn">✏️</button>
+            </div>
+            <div class="interests-grid">
+                <span class="interest-tag">Travel</span>
+                <span class="interest-tag">Technology</span>
+                <span class="interest-tag">Photography</span>
+                <span class="interest-tag">Music</span>
+                <span class="interest-tag">Fitness</span>
+                <span class="interest-tag">Art</span>
+            </div>
+        </div>
+
+        <button class="save-btn">Save Changes</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // Animation for page load
+        gsap.from('.profile-section', {
+            duration: 0.8,
+            y: 30,
+            opacity: 0,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+
+        // Handle profile photo upload
+        document.querySelector('.profile-photo-large').addEventListener('click', () => {
+            // Simulate file upload click
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.click();
+        });
+    </script>
+</body>
+</html>

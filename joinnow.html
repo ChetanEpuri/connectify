@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Same head content as index.html -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Revolutionize your dating experience with AI-powered virtual reality connections. Find meaningful relationships beyond physical boundaries.">
+    <title>VALIDATE | Where Algorithms Meet Authenticity</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        :root {
+            --primary: #ff3399;
+            --secondary: #6600ff;
+            --accent: #f700ff;
+            --bg: #0a0014;
+            --text: #ffffff;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        .canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 0 2rem;
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .hero-title {
+            text-align: center;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            line-height: 1;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            max-width: 90%;
+        }
+        
+        .hero-title span {
+            display: block;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-description {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .hero-subtext {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+        
+        .loader {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loader-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loader-text {
+            font-size: 5vw;
+            font-weight: 800;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .loader-progress {
+            width: 50vw;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loader-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+        
+        .nav-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+        
+        .menu {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .menu-link {
+            color: rgba(255,255,255,0.9);
+            padding: 0.8rem 1.5rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                var(--primary) 0%, 
+                var(--secondary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .menu-link:hover {
+            background: rgba(102, 0, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 0, 255, 0.2);
+            color: white;
+        }
+        
+        .menu-link.active {
+            background: linear-gradient(45deg, 
+                var(--primary) 0%,
+                var(--secondary) 100%);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(102, 0, 255, 0.3);
+        }
+        
+        .menu-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        .menu-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        a {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+        }
+        
+        a.active {
+            background: linear-gradient(45deg, 
+                var(--primary) 0%,
+                var(--secondary) 100%);
+            color: white !important;
+            padding: 0.8rem 1.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 4px 15px rgba(102, 0, 255, 0.3);
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, 
+                var(--primary) 50%, 
+                var(--secondary) 50%);
+            border: none;
+            padding: 1.25rem 3.5rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: visible;
+            box-shadow: 0 8px 30px rgba(255, 51, 153, 0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 40px rgba(255, 51, 153, 0.35);
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, 
+                var(--primary) 0%, 
+                var(--secondary) 50%,
+                var(--accent) 100%);
+            z-index: -1;
+            border-radius: 3rem;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .cta-button:hover::before {
+            opacity: 1;
+        }
+        
+        .cta-button span {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(45deg, 
+                #ffffff 0%, 
+                var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 25%,
+                rgba(255,255,255,0.2) 50%,
+                transparent 75%
+            );
+            animation: sparkle 4s infinite linear;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .cta-button:hover::after {
+            opacity: 0.6;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            right: 3rem;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            z-index: 10;
+        }
+        
+        .scroll-indicator-text {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+        
+        .scroll-line {
+            width: 50px;
+            height: 1px;
+            background: var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scroll-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+        
+        .section {
+            min-height: 100vh;
+            padding: 8rem 2rem;
+            position: relative;
+            opacity: 0;
+        }
+        
+        .section#features {
+            opacity: 1 !important;
+            transform: none !important;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .section-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+        }
+        
+        .feature-card {
+            border: none !important;
+            padding: 3rem;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border: 1px solid rgba(255,51,153,0.1);
+            perspective: 1000px;
+        }
+        
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, 
+                rgba(255,51,153,0.1) 0%, 
+                rgba(102,0,255,0.05) 50%,
+                transparent 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        
+        .feature-card:hover {
+            border-color: transparent !important;
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.03);
+            box-shadow: 0 20px 40px rgba(102,0,255,0.15),
+                        0 0 30px rgba(255,51,153,0.1);
+            border-color: rgba(255,51,153,0.3);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.4s ease;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: translateZ(20px);
+            filter: drop-shadow(0 0 10px rgba(255,51,153,0.3));
+        }
+        
+        .feature-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .feature-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .parallax-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        .parallax-content {
+            text-align: center;
+            z-index: 2;
+            padding: 0 2rem;
+        }
+        
+        .parallax-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        
+        .parallax-description {
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            max-width: 600px;
+            margin: 0 auto 4rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .parallax-cards {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .experience-section {
+            min-height: 100vh;
+            padding: 8rem 2rem;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        .experience-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .experience-text {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        
+        .experience-text h2 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 2rem;
+        }
+        
+        .experience-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .preview-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 1rem;
+            padding: 1rem;
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        
+        .preview-image {
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .preview-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        .footer {
+            background: rgba(0,0,0,0.3);
+            padding: 6rem 2rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+        }
+        
+        .footer-brand h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        
+        .link-group h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .link-group ul {
+            list-style: none;
+        }
+        
+        .link-group li {
+            margin-bottom: 1rem;
+        }
+        
+        .link-group a {
+            color: rgba(255,255,255,0.7);
+            position: relative;
+            padding: 0.3rem 0;
+            display: inline-block;
+        }
+        
+        .link-group a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                var(--primary), 
+                var(--accent));
+            transition: width 0.4s ease;
+        }
+        
+        .link-group a:hover {
+            color: var(--accent);
+            transform: translateX(8px);
+        }
+        
+        .learn-more-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--accent);
+            position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: 2px solid var(--accent);
+    padding: 0.8rem 2rem;
+    border-radius: 2rem;
+    font-weight: 600;
+}
+
+.learn-more-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 25%,
+        rgba(255,51,153,0.2) 50%,
+        transparent 75%
+    );
+    animation: sparkle 3s infinite;
+    opacity: 0;
+}
+
+.learn-more-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255,51,153,0.2);
+    background: linear-gradient(45deg, 
+        rgba(102, 0, 255, 0.2) 0%,
+        rgba(255, 51, 153, 0.2) 100%);
+}
+
+.learn-more-btn:hover::after {
+    opacity: 0.6;
+}
+
+.footer-bottom {
+    max-width: 1400px;
+    margin: 4rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    opacity: 0.7;
+}
+
+@keyframes sparkle {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+@keyframes shimmer {
+    100% { left: 100%; }
+}
+
+@keyframes progressFill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+.feature-progress-bar {
+    animation: progressFill 1.5s ease-out forwards;
+    animation-play-state: paused;
+}
+
+/* Interactive Elements */
+.feature-card:hover .feature-title {
+    text-shadow: 
+        2px 2px 0 rgba(255,51,153,0.3),
+        -2px -2px 0 rgba(102,0,255,0.3);
+}
+
+.feature-stat h4 {
+    transition: transform 0.4s ease;
+}
+
+.feature-card:hover .feature-stat h4 {
+    transform: translateY(-5px);
+}
+
+/* Mobile Optimization */
+@media (max-width: 1200px) {
+    .hero-content {
+        padding: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: clamp(2.2rem, 7vw, 5rem);
+    }
+
+    .feature-card {
+        min-height: 300px;
+        padding: 2rem;
+    }
+
+    .feature-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 1rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-card {
+        min-height: auto;
+        padding: 1.5rem;
+    }
+
+    .menu {
+        display: none;
+    }
+
+    .scroll-indicator {
+        right: 1rem;
+    }
+}
+
+/* Performance Optimizations */
+.feature-card {
+    will-change: transform, box-shadow;
+}
+
+.learn-more-btn {
+    will-change: transform, box-shadow;
+}
+
+/* Depth Effects */
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(255,51,153,0.05) 0%,
+        rgba(102,0,255,0.03) 100%
+    );
+    z-index: -1;
+}
+
+/* Dynamic Border Animation */
+.feature-card:hover {
+    border-image: linear-gradient(
+        45deg,
+        var(--primary),
+        var(--secondary)
+    ) 1;
+}
+
+/* Card Content Transition */
+.feature-content {
+    transition: transform 0.4s ease;
+}
+
+.feature-card:hover .feature-content {
+    transform: translateZ(10px);
+}
+
+/* Particle Effects */
+.feature-card:hover .feature-badge {
+    animation: badgePulse 1.5s infinite;
+}
+
+@keyframes badgePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.hero-link {
+    display: inline-block;
+    position: relative;
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden;
+    border-radius: 2rem;
+    background: linear-gradient(
+        45deg,
+        rgba(255,51,153,0.1) 0%,
+        rgba(102,0,255,0.05) 100%
+    );
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,51,153,0.2);
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.hero-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 25%,
+        rgba(255,51,153,0.2) 50%,
+        transparent 75%
+    );
+    animation: sparkle 3s infinite linear;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hero-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.hero-link:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255,51,153,0.3),
+                0 0 15px rgba(102,0,255,0.2);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,51,153,0.5);
+}
+
+.hero-link:hover::before {
+    opacity: 0.4;
+}
+
+.hero-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.hero-link span {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.hero-link:hover span {
+    animation: textGlitch 0.3s linear infinite;
+}
+
+@keyframes textGlitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); text-shadow: 2px -2px 0 var(--primary); }
+    40% { transform: translate(2px, -1px); text-shadow: -2px 2px 0 var(--secondary); }
+    60% { transform: translate(-1px, 1px); }
+    80% { transform: translate(1px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.hero-link .arrow {
+    display: inline-block;
+    margin-left: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.hero-link:hover .arrow {
+    transform: translateX(5px) rotate(45deg);
+    filter: drop-shadow(0 0 5px var(--accent));
+}
+
+/* Particle Sparkles */
+.hero-link:hover .particle {
+    position: absolute;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particlePop 0.6s ease-out;
+}
+
+@keyframes particlePop {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-50px) scale(1);
+        opacity: 0;
+    }
+}
+.heart-3d {
+    position: absolute;
+    font-size: 1.4rem;
+    color: #ff3366;
+    opacity: 0;
+    pointer-events: none;
+    transform-style: preserve-3d;
+    animation: heartPop 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes heartPop {
+    0% {
+        opacity: 1;
+        transform: 
+            translateZ(0px) 
+            rotateX(0deg) 
+            rotateY(0deg) 
+            scale(0.2);
+    }
+    50% {
+        opacity: 0.8;
+        transform: 
+            translateZ(120px) 
+            rotateX(360deg) 
+            rotateY(180deg) 
+            scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: 
+            translateZ(200px) 
+            rotateX(720deg) 
+            rotateY(360deg) 
+            scale(0.5);
+    }
+}
+.auth-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            border: 1px solid rgba(255,51,153,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .auth-switcher {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .auth-toggle {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .auth-toggle.active {
+            background: linear-gradient(45deg, 
+                var(--primary) 0%,
+                var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102,0,255,0.3);
+        }
+
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .auth-form.active {
+            display: flex;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding: 1rem 0;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-bottom-color: var(--primary);
+        }
+
+        .input-underline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .input-group input:focus ~ .input-underline {
+            width: 100%;
+        }
+
+        .auth-submit {
+            width: 100%;
+            margin-top: 2rem;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+        }
+        .auth-submit {
+        width: 100%;
+        margin-top: 2rem;
+        padding: 1.5rem !important;
+        font-size: 1.2rem !important;
+        border: 1px solid rgba(255,51,153,0.3) !important;
+        background: linear-gradient(
+            45deg,
+            rgba(255, 51, 153, 0.15) 0%,
+            rgba(102, 0, 255, 0.1) 100%
+        ) !important;
+        backdrop-filter: blur(5px);
+    }
+
+    .auth-submit:hover {
+        transform: translateY(-3px) scale(1.05) !important;
+        box-shadow: 0 8px 25px rgba(255,51,153,0.3),
+                    0 0 15px rgba(102,0,255,0.2) !important;
+    }
+
+    .auth-submit::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(
+            45deg,
+            var(--primary) 0%,
+            var(--secondary) 50%,
+            var(--accent) 100%
+        );
+        z-index: -1;
+        border-radius: 3rem;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .auth-submit:hover::before {
+        opacity: 0.3;
+    }
+
+    .auth-submit span {
+        background: linear-gradient(45deg, 
+            #ffffff 0%, 
+            var(--accent) 100%) !important;
+    }
+
+    /* Heart Density Increase */
+    .auth-card:hover .heart-3d {
+        animation: heartPop 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        filter: hue-rotate(-10deg) brightness(120%);
+    }
+    .hero-link.auth-submit span {
+    background: linear-gradient(45deg, #ffffff 0%, var(--accent) 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    display: inline-block !important;
+}
+
+/* Remove conflicting color styles */
+.hero-link.auth-submit {
+    color: transparent !important;
+}
+</style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader">
+        <!-- Same loader content as index.html -->
+        <div class="loader-content">
+            <div class="loader-text">Validate</div>
+            <div class="loader-progress">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="canvas-container"></div>
+
+    <nav class="navigation">
+        <div class="nav-wrapper">
+            <a href="#" class="logo">Validate</a>
+            <div class="menu">
+                <a href="index.html" class="menu-link">Home</a>
+                <a href="#join" class="menu-link active">Join Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <!-- Auth Card -->
+            <div class="auth-card" data-hearts>
+                <div class="auth-switcher">
+                    <button class="auth-toggle active" data-form="login">Login</button>
+                    <button class="auth-toggle" data-form="signup">Sign Up</button>
+                </div>
+
+                <!-- Login Form -->
+                <form class="auth-form login-form active">
+                    <div class="input-group">
+                        <input type="email" placeholder="Email" required>
+                        <div class="input-underline"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" placeholder="Password" required>
+                        <div class="input-underline"></div>
+                    </div>
+                    <button type="submit" class="hero-link auth-submit">
+                        <span>Connect Now</span>
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form class="auth-form signup-form">
+                    <div class="input-group">
+                        <input type="text" placeholder="Registration Number" required>
+                        <div class="input-underline"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" placeholder="Email" required>
+                        <div class="input-underline"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" placeholder="Password" required>
+                        <div class="input-underline"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" placeholder="Confirm Password" required>
+                        <div class="input-underline"></div>
+                    </div>
+                    <button type="submit" class="hero-link auth-submit">
+                        <span>Create Account</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Same footer as index.html -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Validate</h3>
+                <p>Love Without Lies. Dating Without Doubt.</p>
+            </div>
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#press">Press</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Guarantee</h4>
+                    <ul>
+                        <li><a href="#promise">90-Day Match Promise</a></li>
+                        <li><a href="#success">Success Stories</a></li>
+                        <li><a href="#support">Member Support</a></li>
+                    </ul>
+                </div>
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#privacy">Privacy</a></li>
+                        <li><a href="#terms">Terms</a></li>
+                        <li><a href="#cookies">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Validate – 417,921 Real Connections and Counting</p>
+        </div>
+    </footer>
+
+    <script>
+           // Initialize all animations and interactions
+           document.addEventListener('DOMContentLoaded', () => {
+            // Register GSAP plugins
+            gsap.registerPlugin(ScrollTrigger);
+        
+            // Initialize loading animation
+            initLoader();
+        
+            // Initialize Three.js background
+            initThreeBackground();
+        
+            // Initialize scroll animations
+            initScrollAnimations();
+        });
+        
+        // Loading animation
+        function initLoader() {
+            const tl = gsap.timeline();
+        
+            tl.to('.loader-text', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power4.out'
+            })
+            .to('.loader-bar', {
+                width: '100%',
+                duration: 1.5,
+                ease: 'power4.inOut'
+            })
+            .to('.loader', {
+                yPercent: -100,
+                duration: 0.8,
+                ease: 'power4.inOut'
+            })
+            .from(['.hero-title', '.hero-description', '.cta-button', '.hero-subtext', '.scroll-indicator'], {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                stagger: 0.2,
+                ease: 'power4.out'
+            });
+        }
+        
+        // Three.js background animation
+        function initThreeBackground() {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.querySelector('.canvas-container').appendChild(renderer.domElement);
+
+    // Advanced Heart Shape Generation
+    function createRefinedHeartShape() {
+        const heartShape = new THREE.Shape();
+        
+        // More complex heart curve using mathematical heart equation
+        const a = 16;
+        const heartPath = (t) => {
+            const x = a * Math.pow(Math.sin(t), 3);
+            const y = -(
+                a/2 * Math.cos(t) - 
+                a/3 * Math.cos(2*t) - 
+                a/4 * Math.cos(3*t) - 
+                a/5 * Math.cos(4*t)
+            );
+            return { x, y };
+        };
+
+        // Generate path points
+        const points = [];
+        for(let t = 0; t <= Math.PI * 2; t += 0.1) {
+            points.push(new THREE.Vector2(
+                heartPath(t).x / 10, 
+                heartPath(t).y / 10
+            ));
+        }
+
+        heartShape.setFromPoints(points);
+        return heartShape;
+    }
+
+    const heartShape = createRefinedHeartShape();
+    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, {
+        depth: 0.05,  // Thinner depth for more delicate look
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelSegments: 5  // More bevel segments for smoother edges
+    });
+
+    const hearts = [];
+    const maxHearts = 200;  // Increased heart count
+
+    function createHeart() {
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0xff3399, 
+            transparent: true,
+            opacity: 0.6,
+            shininess: 50  // Added shine for more sophistication
+        });
+
+        const heart = new THREE.Mesh(heartGeometry, material);
+        
+        // More spread-out initial positions
+        heart.position.set(
+            (Math.random() - 0.5) * 15,
+            -5, 
+            (Math.random() - 0.5) * 15
+        );
+
+        // More varied rotation
+        heart.rotation.x = Math.random() * Math.PI * 2;
+        heart.rotation.y = Math.random() * Math.PI * 2;
+        heart.rotation.z = Math.random() * Math.PI * 2;
+
+        // More varied scaling
+        const scale = 0.05 + Math.random() * 0.3;
+        heart.scale.set(scale, scale, scale);
+
+        heart.userData = {
+            speed: 0.01 + Math.random() * 0.05,
+            rotationSpeed: {
+                x: (Math.random() - 0.5) * 0.05,
+                y: (Math.random() - 0.5) * 0.05,
+                z: (Math.random() - 0.5) * 0.05
+            }
+        };
+
+        scene.add(heart);
+        hearts.push(heart);
+
+        // Remove excess hearts
+        if (hearts.length > maxHearts) {
+            const oldestHeart = hearts.shift();
+            scene.remove(oldestHeart);
+        }
+    }
+
+    // Enhanced Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const pointLight1 = new THREE.PointLight(0xff3399, 1, 100);
+    pointLight1.position.set(10, 10, 10);
+    scene.add(pointLight1);
+
+    const pointLight2 = new THREE.PointLight(0x6600ff, 0.5, 100);
+    pointLight2.position.set(-10, -10, -10);
+    scene.add(pointLight2);
+
+    camera.position.z = 5;
+
+    // Refined Heart Generation
+    let lastScrollTop = 0;
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDelta = Math.abs(scrollTop - lastScrollTop);
+
+        // More frequent heart generation
+        if (scrollDelta > 30) {
+            // Generate multiple hearts per scroll
+            for(let i = 0; i < 3; i++) {
+                createHeart();
+            }
+            lastScrollTop = scrollTop;
+        }
+    });
+
+    // Enhanced Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        hearts.forEach(heart => {
+            // More dynamic movement
+            heart.position.y += heart.userData.speed;
+            heart.position.x += Math.sin(Date.now() * 0.001) * 0.02;
+            heart.position.z += Math.cos(Date.now() * 0.001) * 0.02;
+
+            // More complex rotation
+            heart.rotation.x += heart.userData.rotationSpeed.x;
+            heart.rotation.y += heart.userData.rotationSpeed.y;
+            heart.rotation.z += heart.userData.rotationSpeed.z;
+
+            // Remove hearts that float too high
+            if (heart.position.y > 10) {
+                scene.remove(heart);
+                hearts.splice(hearts.indexOf(heart), 1);
+            }
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Responsive Resizing
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+}
+        
+        // Scroll animations
+        function initScrollAnimations() {
+            // Animate feature cards
+            gsap.utils.toArray('.feature-card').forEach((card, i) => {
+                ScrollTrigger.create({
+                    trigger: card,
+                    start: 'top bottom-=100',
+                    onEnter: () => {
+                        gsap.to(card, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 1,
+                            ease: 'power4.out',
+                            delay: i * 0.2
+                        });
+                    }
+                });
+            });
+        
+            // Animate parallax section
+            gsap.to('.parallax-section', {
+                scrollTrigger: {
+                    trigger: '.parallax-section',
+                    start: 'top bottom',
+                    onEnter: () => {
+                        gsap.to('.parallax-section', { opacity: 1, duration: 1 });
+                        gsap.to('.parallax-title', { opacity: 1, y: 0, duration: 1, delay: 0.2 });
+                        gsap.to('.parallax-description', { opacity: 1, y: 0, duration: 1, delay: 0.4 });
+                        gsap.to('.stat-card', { 
+                            opacity: 1, 
+                            y: 0, 
+                            duration: 1, 
+                            stagger: 0.2,
+                            delay: 0.6 
+                        });
+                    }
+                }
+            });
+        
+            // Animate experience section
+            gsap.to('.experience-section', {
+                scrollTrigger: {
+                    trigger: '.experience-section',
+                    start: 'top bottom',
+                    onEnter: () => {
+                        gsap.to('.experience-section', { opacity: 1, duration: 1 });
+                        gsap.to('.experience-text', { opacity: 1, x: 0, duration: 1, delay: 0.2 });
+                        gsap.to('.preview-card', { 
+                            opacity: 1, 
+                            x: 0, 
+                            duration: 1, 
+                            stagger: 0.2,
+                            delay: 0.4 
+                        });
+                    }
+                }
+            });
+
+            gsap.to('#features', {
+        scrollTrigger: {
+            trigger: '#features',
+            start: 'top center',
+            toggleActions: 'play none none reverse',
+            onEnter: () => {
+                gsap.to('.feature-card', {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power2.out'
+                });
+            }
+        }
+    });
+        
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        }
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+            const scrollLine = document.querySelector('.scroll-line');
+
+            gsap.fromTo(scrollIndicator, 
+                { opacity: 0, x: -50 }, 
+                { 
+                    opacity: 1, 
+                    x: 0, 
+                    duration: 1, 
+                    delay: 2, 
+                    ease: 'power2.out' 
+                }
+            );
+
+            // Scroll Line Animation
+            ScrollTrigger.create({
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                onUpdate: self => {
+                    const progress = self.progress;
+                    gsap.to(scrollLine, {
+                        scaleX: 1 - progress,
+                        transformOrigin: 'right',
+                        duration: 0.5
+                    });
+                }
+            });
+
+            ScrollTrigger.batch('.feature-card', {
+        start: 'top bottom-=100',
+        onEnter: batch => {
+            gsap.to(batch, {
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: 'power2.out',
+                onComplete: () => {
+                    batch.forEach(card => card.classList.add('in-view'))
+                }
+            });
+        }
+    });
+
+    // Add parallax effect
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            
+            gsap.to(card, {
+                x: x * 20,
+                y: y * 20,
+                rotateX: -y * 10,
+                rotateY: x * 10,
+                duration: 1.5,
+                ease: 'power2.out'
+            });
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                x: 0,
+                y: 0,
+                rotateX: 0,
+                rotateY: 0,
+                duration: 1,
+                ease: 'elastic.out(1, 0.5)'
+            });
+        });
+    });
+
+    // Initialize progress bars
+    document.querySelectorAll('.feature-progress-bar').forEach(bar => {
+        const targetWidth = bar.style.width;
+        bar.style.width = '0';
+        bar.dataset.targetWidth = targetWidth;
+    });
+
+    document.querySelectorAll('.feature-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 15;
+        const rotateY = (centerX - x) / 15;
+        
+        card.style.transform = `perspective(1000px) 
+            rotateX(${rotateX}deg) 
+            rotateY(${rotateY}deg)
+            scale3d(1.05, 1.05, 1.05)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+});
+
+document.querySelector('.hero-link').addEventListener('mouseenter', function(e) {
+    const positions = [
+        // Perimeter positions
+        { x: '0%', y: '25%' },    // Left side
+        { x: '0%', y: '75%' },    
+        { x: '100%', y: '25%' },  // Right side
+        { x: '100%', y: '75%' },
+        { x: '25%', y: '0%' },    // Top
+        { x: '75%', y: '0%' },
+        { x: '25%', y: '100%' },  // Bottom
+        { x: '75%', y: '100%' },
+        // Diagonal positions
+        { x: '15%', y: '15%' },   // Corners
+        { x: '85%', y: '15%' },
+        { x: '15%', y: '85%' },
+        { x: '85%', y: '85%' }
+    ];
+
+    positions.forEach((basePos, i) => {
+        const heart = document.createElement('div');
+        heart.className = 'heart-3d';
+        heart.innerHTML = '❤️';
+        
+        // Add random offset within position area
+        const xOffset = Math.random() * 20 - 10;
+        const yOffset = Math.random() * 20 - 10;
+        
+        heart.style.cssText = `
+            left: calc(${basePos.x} + ${xOffset}px);
+            top: calc(${basePos.y} + ${yOffset}px);
+            animation-delay: ${i * 0.06}s;
+            font-size: ${1.2 + Math.random() * 0.8}rem;
+            filter: hue-rotate(${Math.random() * 40 - 20}deg)
+                    brightness(${100 + Math.random() * 40}%);
+        `;
+        
+        this.appendChild(heart);
+        setTimeout(() => heart.remove(), 1400);
+    });
+});
+        // Add these to existing script
+        document.querySelectorAll('.auth-toggle').forEach(button => {
+            button.addEventListener('click', (e) => {
+                document.querySelector('.auth-toggle.active').classList.remove('active');
+                e.target.classList.add('active');
+                const formType = e.target.dataset.form;
+                document.querySelector('.auth-form.active').classList.remove('active');
+                document.querySelector(`.${formType}-form`).classList.add('active');
+            });
+        });
+
+        // Add tilt effect to auth card
+        document.querySelector('.auth-card').addEventListener('mousemove', (e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 15;
+            const rotateY = (centerX - x) / 15;
+            
+            e.currentTarget.style.transform = `perspective(1000px) 
+                rotateX(${rotateX}deg) 
+                rotateY(${rotateY}deg)
+                scale3d(1.02, 1.02, 1.02)`;
+        });
+
+        document.querySelector('.auth-card').addEventListener('mouseleave', () => {
+            document.querySelector('.auth-card').style.transform = 
+                'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+        });
+
+        function generateHearts(element, count = 12) {
+        const positions = [
+            { x: '0%', y: '25%' }, { x: '0%', y: '75%' },
+            { x: '100%', y: '25%' }, { x: '100%', y: '75%' },
+            { x: '25%', y: '0%' }, { x: '75%', y: '0%' },
+            { x: '25%', y: '100%' }, { x: '75%', y: '100%' },
+            { x: '15%', y: '15%' }, { x: '85%', y: '15%' },
+            { x: '15%', y: '85%' }, { x: '85%', y: '85%' }
+        ];
+
+        positions.forEach((basePos, i) => {
+            const heart = document.createElement('div');
+            heart.className = 'heart-3d';
+            heart.innerHTML = '❤️';
+            
+            const xOffset = Math.random() * 40 - 20;
+            const yOffset = Math.random() * 40 - 20;
+            const rotation = Math.random() * 360;
+            
+            heart.style.cssText = `
+                left: calc(${basePos.x} + ${xOffset}px);
+                top: calc(${basePos.y} + ${yOffset}px);
+                animation-delay: ${i * 0.04}s;
+                font-size: ${1.4 + Math.random() * 1.2}rem;
+                filter: hue-rotate(${Math.random() * 40 - 20}deg)
+                        brightness(${120 + Math.random() * 40}%)
+                        drop-shadow(0 0 5px rgba(255,51,153,0.3));
+                transform: rotate(${rotation}deg);
+            `;
+            
+            element.appendChild(heart);
+            setTimeout(() => heart.remove(), 1400);
+        });
+    }
+
+    // Attach to all elements with data-hearts
+    document.querySelectorAll('[data-hearts]').forEach(btn => {
+        btn.addEventListener('mouseenter', function(e) {
+            generateHearts(this);
+            this.classList.add('heart-active');
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+            this.classList.remove('heart-active');
+        });
+    });
+    </script>
+</body>
+</html>
