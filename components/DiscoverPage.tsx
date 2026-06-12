@@ -70,22 +70,32 @@ const SwipeCard = ({ profile, onSwipe, index, isExiting, exitDirection }) => {
   );
 };
 
-window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
+window.DiscoverPage = ({ onNavigate, profiles, setProfiles, onMatch }) => {
   const [exitDirection, setExitDirection] = useState(null);
+  const [matchOverlay, setMatchOverlay] = useState(null); // stores profile if matched
 
   const handleSwipe = (direction) => {
+    const currentProfile = profiles[0];
     setExitDirection(direction);
-    // Wait for the exit animation to complete before removing the profile
+    
+    // Determine if it's a match (let's say 100% chance on swipe right for the demo)
+    const isMatch = direction === 'right';
+
     setTimeout(() => {
       setProfiles((prev) => prev.slice(1));
       setExitDirection(null);
+      
+      if (isMatch) {
+        onMatch(currentProfile);
+        setMatchOverlay(currentProfile);
+      }
     }, 200);
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center overflow-hidden">
+    <div className="min-h-screen bg-black flex flex-col items-center overflow-hidden relative">
       {/* Top Bar */}
-      <nav className="w-full px-6 py-4 flex items-center justify-between z-50">
+      <nav className="w-full px-6 py-4 flex items-center justify-between z-40">
         <div 
           className="w-10 h-10 liquid-glass rounded-full flex items-center justify-center cursor-pointer hover:bg-white/10 transition"
           onClick={() => onNavigate('landing')}
@@ -111,7 +121,7 @@ window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
       </nav>
 
       {/* Swipe Stack */}
-      <div className="flex-1 w-full flex items-center justify-center relative mt-8 mb-24 px-4">
+      <div className="flex-1 w-full flex items-center justify-center relative mt-8 mb-24 px-4 z-30">
         {profiles.length > 0 ? (
           <div className="relative w-full max-w-sm h-[600px] flex justify-center">
             <AnimatePresence>
@@ -139,7 +149,7 @@ window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
       </div>
 
       {/* Bottom Action Bar */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 z-50">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 z-40">
         <motion.button 
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -180,6 +190,64 @@ window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
           <HeartIcon className="w-6 h-6" />
         </motion.button>
       </div>
+
+      {/* Match Overlay */}
+      <AnimatePresence>
+        {matchOverlay && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl"
+          >
+            <div className="text-center p-8 flex flex-col items-center">
+              <motion.h1 
+                initial={{ scale: 0.5, y: 50 }}
+                animate={{ scale: 1, y: 0 }}
+                className="font-heading italic text-6xl text-rose-500 mb-8 drop-shadow-[0_0_30px_rgba(244,63,94,0.5)]"
+              >
+                It's a Match!
+              </motion.h1>
+              
+              <div className="flex items-center gap-6 mb-12">
+                <motion.img 
+                  initial={{ x: -50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80" 
+                  className="w-32 h-32 rounded-full object-cover border-4 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
+                />
+                <motion.img 
+                  initial={{ x: 50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  src={matchOverlay.image} 
+                  className="w-32 h-32 rounded-full object-cover border-4 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
+                />
+              </div>
+
+              <p className="text-white/80 font-body mb-8">
+                You and {matchOverlay.name} have aligned neural pathways.
+              </p>
+
+              <div className="flex flex-col w-full max-w-xs gap-4">
+                <button 
+                  onClick={() => onNavigate('chat', { profileId: matchOverlay.id })}
+                  className="w-full bg-rose-500 text-white rounded-full py-4 font-body font-medium hover:bg-rose-400 transition"
+                >
+                  Initiate Transmission
+                </button>
+                <button 
+                  onClick={() => setMatchOverlay(null)}
+                  className="w-full border border-white/20 text-white/80 rounded-full py-4 font-body font-medium hover:bg-white/10 transition"
+                >
+                  Keep Exploring
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

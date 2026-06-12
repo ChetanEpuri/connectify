@@ -20,8 +20,11 @@ const Navbar = ({ onNavigate }) => (
           {link}
         </button>
       ))}
-      <button className="bg-white text-black px-4 py-2 rounded-full text-sm font-medium font-body flex items-center gap-1 ml-2 hover:bg-white/90 transition-colors whitespace-nowrap">
-        Claim a Spot <ArrowUpRight className="w-4 h-4" />
+      <button 
+        onClick={() => onNavigate('login')}
+        className="bg-white text-black px-4 py-2 rounded-full text-sm font-medium font-body flex items-center gap-1 ml-2 hover:bg-white/90 transition-colors whitespace-nowrap"
+      >
+        Initialize Connection <ArrowUpRight className="w-4 h-4" />
       </button>
     </div>
 
@@ -45,11 +48,11 @@ const HeroSection = ({ onNavigate }) => (
         className="liquid-glass rounded-full flex items-center gap-3 p-1 pl-1 pr-4 mb-6 pointer-events-auto cursor-pointer"
       >
         <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-semibold">New</span>
-        <span className="text-sm text-white/90 font-body">Maiden Crewed Voyage to Mars Arrives 2026</span>
+        <span className="text-sm text-white/90 font-body">Elite Interstellar Matchmaking Network Live</span>
       </motion.div>
 
       <window.BlurText
-        text="Venture Past Our Sky Across the Universe"
+        text="Find Your Co-Pilot Across the Universe"
         className="text-6xl md:text-7xl lg:text-[5.5rem] font-heading italic text-white leading-[0.8] max-w-2xl text-center tracking-[-4px]"
       />
 
@@ -59,7 +62,7 @@ const HeroSection = ({ onNavigate }) => (
         transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
         className="mt-4 text-sm md:text-base text-white text-center max-w-2xl font-body font-light leading-tight"
       >
-        Discover the universe in ways once unimaginable. Our pioneering vessels and breakthrough engineering bring deep-space exploration within reach—secure and extraordinary.
+        Discover deep-space connections in ways once unimaginable. Our pioneering neural-matching algorithms bring your perfect co-pilot within reach—secure, verified, and extraordinary.
       </motion.p>
 
       <motion.div
@@ -69,16 +72,16 @@ const HeroSection = ({ onNavigate }) => (
         className="flex items-center gap-6 mt-6 pointer-events-auto"
       >
         <button 
-          onClick={() => onNavigate('discover')}
+          onClick={() => onNavigate('login')}
           className="liquid-glass-strong rounded-full px-5 py-2.5 text-sm font-medium text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
         >
-          Start Your Voyage <ArrowUpRight />
+          Initialize Connection <ArrowUpRight />
         </button>
         <button 
           onClick={() => onNavigate('discover')}
           className="flex items-center gap-2 text-sm text-white/90 font-medium font-body hover:text-white transition-colors group"
         >
-          View Liftoff <Play className="text-white/70 group-hover:text-white transition-colors" />
+          View Discover <Play className="text-white/70 group-hover:text-white transition-colors" />
         </button>
       </motion.div>
 
@@ -91,15 +94,15 @@ const HeroSection = ({ onNavigate }) => (
         <div className="liquid-glass p-5 w-[220px] rounded-[1.25rem] flex flex-col justify-between hover:bg-white/5 transition-colors cursor-pointer">
           <ClockIcon className="text-white mb-6" />
           <div>
-            <div className="font-heading italic text-white text-4xl tracking-[-1px] leading-none">34.5 Min</div>
-            <div className="text-xs text-white font-body font-light mt-2">Average Videos Watch Time</div>
+            <div className="font-heading italic text-white text-4xl tracking-[-1px] leading-none">98.5%</div>
+            <div className="text-xs text-white font-body font-light mt-2">Neural Match Success Rate</div>
           </div>
         </div>
         <div className="liquid-glass p-5 w-[220px] rounded-[1.25rem] flex flex-col justify-between hover:bg-white/5 transition-colors cursor-pointer">
           <GlobeIcon className="text-white mb-6" />
           <div>
             <div className="font-heading italic text-white text-4xl tracking-[-1px] leading-none">2.8B+</div>
-            <div className="text-xs text-white font-body font-light mt-2">Users Across the Globe</div>
+            <div className="text-xs text-white font-body font-light mt-2">Verified Voyagers Worldwide</div>
           </div>
         </div>
       </motion.div>
@@ -112,7 +115,7 @@ const HeroSection = ({ onNavigate }) => (
       className="relative z-10 flex flex-col items-center gap-4 pb-8 pointer-events-auto"
     >
       <div className="liquid-glass rounded-full px-3.5 py-1 text-xs font-medium text-white">
-        Collaborating with top aerospace pioneers globally
+        Connecting top aerospace pioneers globally
       </div>
       <div className="flex items-center justify-center flex-wrap gap-12 md:gap-16 font-heading italic text-white text-2xl md:text-3xl tracking-tight opacity-90">
         <span>Aeon</span>
@@ -134,9 +137,9 @@ const CapabilitiesSection = () => (
     
     <div className="relative z-10 px-8 md:px-16 lg:px-20 pt-24 pb-10 flex flex-col flex-1 min-h-screen">
       <div className="mb-auto">
-        <div className="text-sm font-body text-white/80 mb-6 uppercase tracking-widest">// Capabilities</div>
+        <div className="text-sm font-body text-white/80 mb-6 uppercase tracking-widest">// Why Connectify?</div>
         <h2 className="font-heading italic text-white text-6xl md:text-7xl lg:text-[6rem] leading-[0.9] tracking-[-3px]">
-          Production<br />evolved
+          Matchmaking<br />evolved
         </h2>
       </div>
 
@@ -148,16 +151,16 @@ const CapabilitiesSection = () => (
               <MaterialIconImage className="text-white" />
             </div>
             <div className="flex flex-wrap justify-end gap-1.5 max-w-[70%]">
-              {['Natural Context', 'Photo Realism', 'Infinite Settings', 'Eco-Vibe'].map(tag => (
+              {['Deep Sync', 'Biometric', 'Zero Catfishing', 'Verified'].map(tag => (
                 <span key={tag} className="liquid-glass rounded-full px-3 py-1 text-[11px] text-white/90 font-body whitespace-nowrap">{tag}</span>
               ))}
             </div>
           </div>
           <div className="flex-1"></div>
           <div className="mt-6">
-            <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">AI Scenery</h3>
+            <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">Verified Holograms</h3>
             <p className="mt-3 text-sm text-white/90 font-body font-light leading-snug max-w-[32ch]">
-              AI analyzes your product to create indistinguishable natural environments — from Icelandic cliffs to misty forests.
+              Our AI verifies profiles using 3D biometric scans. Meet your matches in indistinguishable holographic environments before liftoff.
             </p>
           </div>
         </div>
@@ -169,16 +172,16 @@ const CapabilitiesSection = () => (
               <MaterialIconMovie className="text-white" />
             </div>
             <div className="flex flex-wrap justify-end gap-1.5 max-w-[70%]">
-              {['Scale Fast', 'Visual Consistency', 'Time Saver', 'Ready to Post'].map(tag => (
+              {['AI Prediction', 'Psych Sync', 'Long-term', 'Compatible'].map(tag => (
                 <span key={tag} className="liquid-glass rounded-full px-3 py-1 text-[11px] text-white/90 font-body whitespace-nowrap">{tag}</span>
               ))}
             </div>
           </div>
           <div className="flex-1"></div>
           <div className="mt-6">
-            <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">Batch Production</h3>
+            <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">Neural Matching</h3>
             <p className="mt-3 text-sm text-white/90 font-body font-light leading-snug max-w-[32ch]">
-              Style your entire product line in minutes. Create a unified visual identity for catalogues and social media without weeks of retouching.
+              Connect based on deep psychological compatibility. Our algorithms calculate long-term mission viability before you even swipe.
             </p>
           </div>
         </div>
@@ -190,16 +193,16 @@ const CapabilitiesSection = () => (
               <MaterialIconLightbulb className="text-white" />
             </div>
             <div className="flex flex-wrap justify-end gap-1.5 max-w-[70%]">
-              {['Ray Tracing', 'Physical Shadows', 'Studio Quality', 'Sunlight Sync'].map(tag => (
+              {['Quantum Encrypted', 'No Traces', 'Secure', 'Private Link'].map(tag => (
                 <span key={tag} className="liquid-glass rounded-full px-3 py-1 text-[11px] text-white/90 font-body whitespace-nowrap">{tag}</span>
               ))}
             </div>
           </div>
           <div className="flex-1"></div>
           <div className="mt-6">
-            <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">Smart Lighting</h3>
+            <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">Secure Messaging</h3>
             <p className="mt-3 text-sm text-white/90 font-body font-light leading-snug max-w-[32ch]">
-              Automatic lighting and material adjustment. Achieve flawless integration with realistic shadows and sunlight.
+              Every transmission is quantum-encrypted. Enjoy absolute privacy whether you're chatting from Earth or Orbital Station Alpha.
             </p>
           </div>
         </div>

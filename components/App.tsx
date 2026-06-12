@@ -36,12 +36,13 @@ const INITIAL_PROFILES = [
   }
 ];
 
-const INITIAL_MESSAGES = [
-  { id: 1, text: "Hey! Saw you're heading to Mars Base 4.", sender: 'them', time: '10:24 AM' },
-  { id: 2, text: "Yeah! It's my first deployment. Have you been?", sender: 'me', time: '10:26 AM' },
-  { id: 3, text: "Twice. The view of Olympus Mons at sunrise is incredible.", sender: 'them', time: '10:28 AM' },
-  { id: 4, text: "That sounds amazing. We should grab a space-coffee when I arrive.", sender: 'me', time: '10:30 AM' },
-];
+// Messages are now keyed by profile ID
+const INITIAL_MESSAGES = {
+  1: [
+    { id: 1, text: "Hey! Saw you're heading to Mars Base 4.", sender: 'them', time: '10:24 AM' },
+    { id: 2, text: "Yeah! It's my first deployment. Have you been?", sender: 'me', time: '10:26 AM' },
+  ]
+};
 
 const App = () => {
   // Suppress specific framer-motion key warnings
@@ -53,30 +54,86 @@ const App = () => {
     };
   }, []);
 
+  // Routing State
   const [currentView, setCurrentView] = useState('landing');
+  const [activeChatId, setActiveChatId] = useState(null); // Which profile we are chatting with
   
-  // Global State
+  // Auth State
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // App Data State
   const [profiles, setProfiles] = useState(INITIAL_PROFILES);
+  const [matches, setMatches] = useState([]); // Array of matched profile objects
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
 
-  // Simple Router
+  const handleLogin = (userData) => {
+    setCurrentUser(userData);
+    setCurrentView('discover');
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setCurrentView('landing');
+  };
+
+  const handleNavigate = (view, data = null) => {
+    // Protected routes
+    if (['discover', 'chat', 'profile'].includes(view) && !currentUser) {
+      setCurrentView('login');
+      return;
+    }
+    
+    if (view === 'chat' && data?.profileId) {
+      setActiveChatId(data.profileId);
+    }
+    
+    setCurrentView(view);
+  };
+
+  const handleMatch = (profile) => {
+    setMatches(prev => [...prev, profile]);
+    // Initialize empty message thread if it doesn't exist
+    if (!messages[profile.id]) {
+      setMessages(prev => ({ ...prev, [profile.id]: [] }));
+    }
+  };
+
   let ViewComponent;
   switch (currentView) {
     case 'landing':
-      ViewComponent = <window.LandingPage onNavigate={setCurrentView} />;
+      ViewComponent = <window.LandingPage onNavigate={handleNavigate} />;
+      break;
+    case 'login':
+      ViewComponent = <window.LoginPage onLogin={handleLogin} onNavigate={handleNavigate} />;
       break;
     case 'discover':
     case 'voyages':
-      ViewComponent = <window.DiscoverPage onNavigate={setCurrentView} profiles={profiles} setProfiles={setProfiles} />;
+      ViewComponent = <window.DiscoverPage 
+        onNavigate={handleNavigate} 
+        profiles={profiles} 
+        setProfiles={setProfiles}
+        onMatch={handleMatch}
+      />;
       break;
     case 'chat':
-      ViewComponent = <window.ChatPage onNavigate={setCurrentView} messages={messages} setMessages={setMessages} />;
+      ViewComponent = <window.ChatPage 
+        onNavigate={handleNavigate} 
+        matches={matches}
+        activeChatId={activeChatId}
+        setActiveChatId={setActiveChatId}
+        messages={messages} 
+        setMessages={setMessages} 
+      />;
       break;
     case 'profile':
-      ViewComponent = <window.ProfilePage onNavigate={setCurrentView} />;
+      ViewComponent = <window.ProfilePage 
+        onNavigate={handleNavigate} 
+        currentUser={currentUser}
+        onLogout={handleLogout}
+      />;
       break;
     default:
-      ViewComponent = <window.LandingPage onNavigate={setCurrentView} />;
+      ViewComponent = <window.LandingPage onNavigate={handleNavigate} />;
   }
 
   return (

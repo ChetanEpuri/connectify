@@ -1,12 +1,20 @@
 var { useState } = React;
 var { motion } = window.Motion;
 
-window.ProfilePage = ({ onNavigate }) => {
+window.ProfilePage = ({ onNavigate, currentUser, onLogout }) => {
   const [notifications, setNotifications] = useState(true);
   const [incognito, setIncognito] = useState(false);
 
+  // Fallback to avoid crashes if accessed without login state somehow
+  const user = currentUser || {
+    name: "Unknown Voyager",
+    email: "unknown@sector.com",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80",
+    role: "Unverified Sector"
+  };
+
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center">
+    <div className="min-h-screen bg-black flex flex-col items-center selection:bg-white/20 selection:text-white">
       {/* Top Bar */}
       <nav className="w-full px-6 py-4 flex items-center justify-between z-50">
         <div 
@@ -28,12 +36,12 @@ window.ProfilePage = ({ onNavigate }) => {
           animate={{ opacity: 1, y: 0 }}
           className="liquid-glass rounded-3xl p-6 flex flex-col items-center relative overflow-hidden"
         >
-          <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/20 mb-4 z-10 relative">
-            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80" alt="My Profile" className="w-full h-full object-cover" />
+          <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/20 mb-4 z-10 relative shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-sky-500/20 pointer-events-none mix-blend-overlay"></div>
           </div>
           <div className="flex items-center gap-2 z-10">
-            <h2 className="font-heading italic text-4xl text-white">Commander Alex</h2>
+            <h2 className="font-heading italic text-4xl text-white">{user.name}</h2>
             {/* Biometric Verified Badge */}
             <div className="text-sky-400 group relative cursor-help">
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -45,7 +53,8 @@ window.ProfilePage = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-          <p className="text-white/60 font-body text-sm mt-1 z-10">Earth Sector • Online</p>
+          <p className="text-white/60 font-body text-sm mt-1 z-10">{user.role} • Online</p>
+          <p className="text-white/40 font-body text-xs mt-1 z-10">{user.email}</p>
           
           <button className="mt-6 liquid-glass-strong px-6 py-2 rounded-full text-white font-body text-sm z-10 hover:bg-white/10 transition">
             Edit Dossier
@@ -66,15 +75,15 @@ window.ProfilePage = ({ onNavigate }) => {
               <div className="w-full bg-white/20 rounded-t h-[40%]"></div>
               <div className="w-full bg-white/40 rounded-t h-[70%]"></div>
               <div className="w-full bg-white/80 rounded-t h-[90%]"></div>
-              <div className="w-full bg-emerald-400 rounded-t h-[100%]"></div>
+              <div className="w-full bg-rose-400 rounded-t h-[100%]"></div>
             </div>
           </div>
           <div className="liquid-glass rounded-2xl p-4 flex flex-col">
             <span className="text-white/50 font-body text-xs uppercase tracking-widest">Neural Match Rate</span>
-            <span className="font-heading italic text-3xl text-emerald-400 mt-1">84%</span>
+            <span className="font-heading italic text-3xl text-rose-400 mt-1">84%</span>
             <div className="mt-4 h-8 flex items-center">
               <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-400 w-[84%] rounded-full"></div>
+                <div className="h-full bg-rose-400 w-[84%] rounded-full"></div>
               </div>
             </div>
           </div>
@@ -126,7 +135,10 @@ window.ProfilePage = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="liquid-glass rounded-2xl flex flex-col overflow-hidden mt-4 cursor-pointer hover:bg-white/5 transition">
+          <div 
+            onClick={onLogout}
+            className="liquid-glass rounded-2xl flex flex-col overflow-hidden mt-4 cursor-pointer hover:bg-white/5 transition"
+          >
             <div className="flex items-center justify-between p-4 text-rose-500 font-body text-sm">
               <span>Abort Mission (Logout)</span>
               <span>→</span>
