@@ -1,5 +1,5 @@
-const { useState } = React;
-const { motion, AnimatePresence } = window.Motion;
+var { useState } = React;
+var { motion, AnimatePresence } = window.Motion;
 
 window.ChatPage = ({ onNavigate, messages, setMessages }) => {
   const [inputText, setInputText] = useState("");

@@ -1,6 +1,6 @@
-const { useState } = React;
-const { motion, useMotionValue, useTransform, AnimatePresence } = window.Motion;
-const { HeartIcon, UserIcon } = window.Icons;
+var { useState } = React;
+var { motion, useMotionValue, useTransform, AnimatePresence } = window.Motion;
+var { HeartIcon, UserIcon } = window.Icons;
 
 const SwipeCard = ({ profile, onSwipe, index, isExiting, exitDirection }) => {
   const x = useMotionValue(0);
@@ -79,6 +79,7 @@ window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
     setTimeout(() => {
       setProfiles((prev) => prev.slice(1));
       setExitDirection(null);
+    }, 200);
   };
 
   return (

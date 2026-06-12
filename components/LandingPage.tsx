@@ -1,5 +1,5 @@
-const { motion } = window.Motion;
-const { ArrowUpRight, Play, ClockIcon, GlobeIcon, MaterialIconImage, MaterialIconMovie, MaterialIconLightbulb } = window.Icons;
+var { motion } = window.Motion;
+var { ArrowUpRight, Play, ClockIcon, GlobeIcon, MaterialIconImage, MaterialIconMovie, MaterialIconLightbulb } = window.Icons;
 
 const Navbar = ({ onNavigate }) => (
   <nav className="fixed top-4 left-0 right-0 px-8 lg:px-16 z-50 flex items-center justify-between pointer-events-auto">

@@ -1,5 +1,5 @@
-const { useEffect, useRef } = React;
-const { motion, useInView } = window.Motion;
+var { useEffect, useRef } = React;
+var { motion, useInView } = window.Motion;
 
 window.FadingVideo = ({ src, className, style }) => {
   const videoRef = useRef<HTMLVideoElement>(null);

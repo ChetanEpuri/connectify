@@ -1,4 +1,4 @@
-const { useState, useMemo } = React;
+var { useState, useMemo } = React;
 
 const INITIAL_PROFILES = [
   {

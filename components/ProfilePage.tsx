@@ -1,5 +1,5 @@
-const { useState } = React;
-const { motion } = window.Motion;
+var { useState } = React;
+var { motion } = window.Motion;
 
 window.ProfilePage = ({ onNavigate }) => {
   const [notifications, setNotifications] = useState(true);
