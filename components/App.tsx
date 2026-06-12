@@ -1,5 +1,4 @@
 const { useState, useMemo } = React;
-const { LandingPage } = window;
 
 const INITIAL_PROFILES = [
   {
@@ -64,7 +63,7 @@ const App = () => {
   let ViewComponent;
   switch (currentView) {
     case 'landing':
-      ViewComponent = <LandingPage onNavigate={setCurrentView} />;
+      ViewComponent = <window.LandingPage onNavigate={setCurrentView} />;
       break;
     case 'discover':
     case 'voyages':
@@ -77,7 +76,7 @@ const App = () => {
       ViewComponent = <window.ProfilePage onNavigate={setCurrentView} />;
       break;
     default:
-      ViewComponent = <LandingPage onNavigate={setCurrentView} />;
+      ViewComponent = <window.LandingPage onNavigate={setCurrentView} />;
   }
 
   return (
