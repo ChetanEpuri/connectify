@@ -79,9 +79,6 @@ window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
     setTimeout(() => {
       setProfiles((prev) => prev.slice(1));
       setExitDirection(null);
-    }, 200);
-  };
-    // In a real app, send swipe to backend here
   };
 
   return (

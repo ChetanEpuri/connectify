@@ -1,7 +1,7 @@
 const { useEffect, useRef } = React;
 const { motion, useInView } = window.Motion;
 
-window.FadingVideo = ({ src, className, style }: { src: string, className?: string, style?: any }) => {
+window.FadingVideo = ({ src, className, style }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fadingOutRef = useRef(false);
   const rafRef = useRef<number | null>(null);
@@ -92,7 +92,7 @@ window.FadingVideo = ({ src, className, style }: { src: string, className?: stri
   );
 };
 
-window.BlurText = ({ text, className }: { text: string, className?: string }) => {
+window.BlurText = ({ text, className }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
   const words = text.split(' ');

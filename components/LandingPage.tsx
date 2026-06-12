@@ -30,7 +30,7 @@ const Navbar = ({ onNavigate }) => (
 );
 
 const HeroSection = ({ onNavigate }) => (
-  <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col pointer-events-none">
+  <section className="relative w-full h-screen overflow-hidden flex flex-col pointer-events-none" style={{background: 'radial-gradient(ellipse at 60% 40%, #1a0a2e 0%, #000 70%)'}}>
     <window.FadingVideo
       src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_080021_d598092b-c4c2-4e53-8e46-94cf9064cd50.mp4"
       className="absolute left-1/2 top-0 -translate-x-1/2 object-cover object-top z-0"
@@ -126,7 +126,7 @@ const HeroSection = ({ onNavigate }) => (
 );
 
 const CapabilitiesSection = () => (
-  <section className="relative w-full min-h-screen bg-black flex flex-col">
+  <section className="relative w-full min-h-screen flex flex-col" style={{background: 'radial-gradient(ellipse at 40% 60%, #0a1628 0%, #000 70%)'}}>
     <window.FadingVideo
       src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_094631_d30ab262-45ee-4b7d-99f3-5d5848c8ef13.mp4"
       className="absolute inset-0 w-full h-full object-cover z-0"
