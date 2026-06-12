@@ -1,238 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Validate — AI-powered dating that sparks real connections. Verified profiles, deep compatibility matching, and zero ghosting.">
-    <meta name="theme-color" content="#0a0014">
-    <meta property="og:title" content="Validate | Spark Real Connections">
-    <meta property="og:description" content="AI-powered dating with verified profiles and deep compatibility matching.">
-    <meta property="og:type" content="website">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data: blob:;">
-    <title>Validate | Spark Real Connections</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js" defer></script>
-    <script src="shared.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validate | Venture Past Our Sky</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['"Instrument Serif"', 'serif'],
+            body: ['"Barlow"', 'sans-serif'],
+          },
+          borderRadius: {
+            DEFAULT: "9999px",
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & Framer Motion CDNs -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js"></script>
+  <script>window.Motion = window.FramerMotion;</script>
+
+  <!-- Liquid-Glass Design System CSS -->
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    .liquid-glass {
+      background: rgba(255,255,255,0.01);
+      background-blend-mode: luminosity;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: none;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .liquid-glass::before {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      padding: 1.4px;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.45) 0%,
+        rgba(255,255,255,0.15) 20%,
+        rgba(255,255,255,0) 40%,
+        rgba(255,255,255,0) 60%,
+        rgba(255,255,255,0.15) 80%,
+        rgba(255,255,255,0.45) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .liquid-glass-strong {
+      background: rgba(255,255,255,0.01);
+      background-blend-mode: luminosity;
+      backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
+      border: none;
+      box-shadow: 4px 4px 4px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .liquid-glass-strong::before {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      padding: 1.4px;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.5) 0%,
+        rgba(255,255,255,0.2) 20%,
+        rgba(255,255,255,0) 40%,
+        rgba(255,255,255,0) 60%,
+        rgba(255,255,255,0.2) 80%,
+        rgba(255,255,255,0.5) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    /* Hide scrollbar for clean cinematic look */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
+  </style>
 </head>
 <body>
-    <!-- Loader -->
-    <div class="loader"><div class="loader-content"><div class="loader-text">Validate</div><div class="loader-progress"><div class="loader-bar"></div></div></div></div>
+  <div id="root"></div>
 
-    <div class="canvas-container"></div>
-
-    <!-- Navigation -->
-    <nav class="navigation">
-        <div class="nav-wrapper">
-            <a href="index.html" class="logo">Validate</a>
-            <div class="menu">
-                <a href="index.html" class="menu-link active">Home</a>
-                <a href="about.html" class="menu-link">About</a>
-                <a href="home.html" class="menu-link">Discover</a>
-                <a href="joinnow.html" class="menu-link">Join Now</a>
-            </div>
-            <button class="mobile-menu-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-        </div>
-    </nav>
-
-    <main>
-        <!-- Hero -->
-        <section class="hero" id="hero">
-            <div class="hero-content">
-                <h1 class="hero-title">Spark Real<br>Connections <span>That Click Before You Swipe</span></h1>
-                <p class="hero-description">Validate uses behavioral AI and verified identity to match you with people who genuinely click — no catfishing, no ghosting, just real chemistry.</p>
-                <a href="joinnow.html" class="hero-link" data-hearts>
-                    <span>Find Your 99% Match</span>
-                    <span class="arrow">→</span>
-                </a>
-                <p class="hero-subtext">✦ 50,000+ verified profiles and counting</p>
-            </div>
-            <div class="scroll-indicator">
-                <div class="scroll-indicator-text">Scroll</div>
-                <div class="scroll-indicator-line"></div>
-            </div>
-        </section>
-
-        <!-- Features -->
-        <section class="section" id="features">
-            <div class="section-content">
-                <div class="features-grid">
-                    <!-- Verification Card -->
-                    <div class="feature-card">
-                        <div class="feature-badge">AI Verified</div>
-                        <div class="feature-content">
-                            <div class="feature-icon">🛡️</div>
-                            <h3 class="feature-title">Smart Verification</h3>
-                            <div class="feature-stats">
-                                <div class="feature-stat"><h4>99.9%</h4><p>Accuracy</p></div>
-                                <div class="feature-stat"><h4>9-Step</h4><p>Verification</p></div>
-                            </div>
-                            <div class="feature-progress"><div class="feature-progress-bar" style="width:95%"></div></div>
-                            <p>Advanced AI cross-references 20+ data points to ensure authentic human connections.</p>
-                        </div>
-                        <div class="feature-learn-more">
-                            <button class="learn-more-btn">See Verification Process →</button>
-                        </div>
-                    </div>
-
-                    <!-- Matching Card -->
-                    <div class="feature-card">
-                        <div class="feature-badge">DNA Match</div>
-                        <div class="feature-content">
-                            <div class="feature-icon">🧬</div>
-                            <h3 class="feature-title">Deep Compatibility</h3>
-                            <div class="feature-stats">
-                                <div class="feature-stat"><h4>143+</h4><p>Markers</p></div>
-                                <div class="feature-stat"><h4>97%</h4><p>Success Rate</p></div>
-                            </div>
-                            <div class="feature-progress"><div class="feature-progress-bar" style="width:97%"></div></div>
-                            <p>Our Personality Genome analyzes core values, communication styles, and life goals.</p>
-                        </div>
-                        <div class="feature-learn-more">
-                            <button class="learn-more-btn">View Matching Science →</button>
-                        </div>
-                    </div>
-
-                    <!-- Security Card -->
-                    <div class="feature-card">
-                        <div class="feature-badge">Military Grade</div>
-                        <div class="feature-content">
-                            <div class="feature-icon">🔒</div>
-                            <h3 class="feature-title">Data Protection</h3>
-                            <div class="feature-stats">
-                                <div class="feature-stat"><h4>256-bit</h4><p>Encryption</p></div>
-                                <div class="feature-stat"><h4>100%</h4><p>Privacy</p></div>
-                            </div>
-                            <div class="feature-progress"><div class="feature-progress-bar" style="width:100%"></div></div>
-                            <p>Bank-level security with biometric authentication and regular penetration testing.</p>
-                        </div>
-                        <div class="feature-learn-more">
-                            <button class="learn-more-btn">Security Details →</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Parallax -->
-        <section class="parallax-section" id="stats">
-            <div class="parallax-content">
-                <h2 class="parallax-title">Ghostproof Dating</h2>
-                <p class="parallax-description">Our accountability system means matches actually show up. Real people, real conversations, real connections.</p>
-                <div class="parallax-cards">
-                    <div class="stat-card"><h3>50K+</h3><p>Verified Profiles</p></div>
-                    <div class="stat-card"><h3>95%</h3><p>Match Authenticity</p></div>
-                    <div class="stat-card"><h3>1M+</h3><p>Genuine Connections</p></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Experience / Testimonials -->
-        <section class="experience-section" id="stories">
-            <div class="experience-content">
-                <div class="experience-text">
-                    <h2>Stories That Started Here</h2>
-                    <p>Real people. Real sparks. Real futures built on trust and compatibility.</p>
-                </div>
-                <div class="experience-preview">
-                    <div class="preview-card">
-                        <div class="preview-image"></div>
-                        <h3>Emma & Jake</h3>
-                        <p>"We matched on compatibility, but the spark was instant. 8 months in and planning our first trip together."</p>
-                    </div>
-                    <div class="preview-card">
-                        <div class="preview-image"></div>
-                        <h3>Michael's Story</h3>
-                        <p>"After years of catfishing and ghosting on other apps, Validate felt like a breath of fresh air."</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <h3>Validate</h3>
-                <p>Love Without Lies. Dating Without Doubt.</p>
-            </div>
-            <div class="footer-links">
-                <div class="link-group"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div>
-                <div class="link-group"><h4>Guarantee</h4><ul><li><a href="#">90-Day Match Promise</a></li><li><a href="#">Success Stories</a></li><li><a href="#">Member Support</a></li></ul></div>
-                <div class="link-group"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Cookies</a></li></ul></div>
-            </div>
-        </div>
-        <div class="footer-bottom"><p>&copy; 2025 Validate – 417,921 Real Connections and Counting</p></div>
-    </footer>
-
-    <!-- V1 3D Heart Particles + Feature Card Tilt -->
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // 3D Heart burst on hero-link hover
-        const heroLink = document.querySelector('.hero-link[data-hearts]');
-        if (heroLink) {
-            heroLink.addEventListener('mouseenter', function() {
-                const positions = [
-                    { x: '0%', y: '25%' }, { x: '0%', y: '75%' },
-                    { x: '100%', y: '25%' }, { x: '100%', y: '75%' },
-                    { x: '25%', y: '0%' }, { x: '75%', y: '0%' },
-                    { x: '25%', y: '100%' }, { x: '75%', y: '100%' },
-                    { x: '15%', y: '15%' }, { x: '85%', y: '15%' },
-                    { x: '15%', y: '85%' }, { x: '85%', y: '85%' }
-                ];
-                positions.forEach((pos, i) => {
-                    const heart = document.createElement('div');
-                    heart.className = 'heart-3d';
-                    heart.innerHTML = '❤️';
-                    const xOff = Math.random() * 20 - 10;
-                    const yOff = Math.random() * 20 - 10;
-                    heart.style.cssText = `left:calc(${pos.x} + ${xOff}px);top:calc(${pos.y} + ${yOff}px);animation-delay:${i * 0.06}s;font-size:${1.2 + Math.random() * 0.6}rem;`;
-                    this.appendChild(heart);
-                    setTimeout(() => heart.remove(), 1400);
-                });
-            });
-        }
-
-        // Feature card 3D tilt with perspective
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 15;
-                const rotateY = (centerX - x) / 15;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            });
-        });
-
-        // Initialize progress bars when feature cards scroll into view
-        if (typeof IntersectionObserver !== 'undefined') {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const bar = entry.target.querySelector('.feature-progress-bar');
-                        if (bar) {
-                            const target = bar.style.width;
-                            bar.style.width = '0';
-                            requestAnimationFrame(() => {
-                                bar.style.transition = 'width 1.5s ease-out';
-                                bar.style.width = target;
-                            });
-                        }
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.3 });
-            document.querySelectorAll('.feature-card').forEach(card => observer.observe(card));
-        }
-    });
-    </script>
+  <!-- Load our React App -->
+  <script type="text/babel" data-presets="react,typescript" src="app.tsx"></script>
 </body>
 </html>
