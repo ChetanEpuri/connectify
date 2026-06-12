@@ -1,6 +1,5 @@
 const { motion } = window.Motion;
 const { ArrowUpRight, Play, ClockIcon, GlobeIcon, MaterialIconImage, MaterialIconMovie, MaterialIconLightbulb } = window.Icons;
-const { FadingVideo, BlurText } = window;
 
 const Navbar = ({ onNavigate }) => (
   <nav className="fixed top-4 left-0 right-0 px-8 lg:px-16 z-50 flex items-center justify-between pointer-events-auto">
@@ -32,7 +31,7 @@ const Navbar = ({ onNavigate }) => (
 
 const HeroSection = ({ onNavigate }) => (
   <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col pointer-events-none">
-    <FadingVideo
+    <window.FadingVideo
       src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_080021_d598092b-c4c2-4e53-8e46-94cf9064cd50.mp4"
       className="absolute left-1/2 top-0 -translate-x-1/2 object-cover object-top z-0"
       style={{ width: "120%", height: "120%" }}
@@ -49,7 +48,7 @@ const HeroSection = ({ onNavigate }) => (
         <span className="text-sm text-white/90 font-body">Maiden Crewed Voyage to Mars Arrives 2026</span>
       </motion.div>
 
-      <BlurText
+      <window.BlurText
         text="Venture Past Our Sky Across the Universe"
         className="text-6xl md:text-7xl lg:text-[5.5rem] font-heading italic text-white leading-[0.8] max-w-2xl text-center tracking-[-4px]"
       />
@@ -128,7 +127,7 @@ const HeroSection = ({ onNavigate }) => (
 
 const CapabilitiesSection = () => (
   <section className="relative w-full min-h-screen bg-black flex flex-col">
-    <FadingVideo
+    <window.FadingVideo
       src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_094631_d30ab262-45ee-4b7d-99f3-5d5848c8ef13.mp4"
       className="absolute inset-0 w-full h-full object-cover z-0"
     />
