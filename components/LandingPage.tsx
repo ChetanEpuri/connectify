@@ -30,7 +30,7 @@ const Navbar = ({ onNavigate }) => (
   </nav>
 );
 
-const HeroSection = () => (
+const HeroSection = ({ onNavigate }) => (
   <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col pointer-events-none">
     <FadingVideo
       src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_080021_d598092b-c4c2-4e53-8e46-94cf9064cd50.mp4"
@@ -69,10 +69,16 @@ const HeroSection = () => (
         transition={{ duration: 0.8, delay: 1.1, ease: "easeOut" }}
         className="flex items-center gap-6 mt-6 pointer-events-auto"
       >
-        <button className="liquid-glass-strong rounded-full px-5 py-2.5 text-sm font-medium text-white flex items-center gap-2 hover:bg-white/10 transition-colors">
+        <button 
+          onClick={() => onNavigate('discover')}
+          className="liquid-glass-strong rounded-full px-5 py-2.5 text-sm font-medium text-white flex items-center gap-2 hover:bg-white/10 transition-colors"
+        >
           Start Your Voyage <ArrowUpRight />
         </button>
-        <button className="flex items-center gap-2 text-sm text-white/90 font-medium font-body hover:text-white transition-colors group">
+        <button 
+          onClick={() => onNavigate('discover')}
+          className="flex items-center gap-2 text-sm text-white/90 font-medium font-body hover:text-white transition-colors group"
+        >
           View Liftoff <Play className="text-white/70 group-hover:text-white transition-colors" />
         </button>
       </motion.div>
@@ -207,7 +213,7 @@ window.LandingPage = ({ onNavigate }) => {
   return (
     <div className="font-body selection:bg-white/20 selection:text-white">
       <Navbar onNavigate={onNavigate} />
-      <HeroSection />
+      <HeroSection onNavigate={onNavigate} />
       <CapabilitiesSection />
     </div>
   );

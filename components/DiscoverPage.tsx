@@ -2,43 +2,7 @@ const { useState } = React;
 const { motion, useMotionValue, useTransform, AnimatePresence } = window.Motion;
 const { HeartIcon, UserIcon } = window.Icons;
 
-const PROFILES = [
-  {
-    id: 1,
-    name: "Elena",
-    age: 28,
-    role: "Astro-Botanist",
-    distance: "0.2 Lightyears Away",
-    matchScore: 94,
-    bio: "Looking for a co-pilot to explore the outer rim. I bring the space-snacks.",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-    tags: ["Mars Base 4", "Zero-G Yoga", "Sci-Fi"]
-  },
-  {
-    id: 2,
-    name: "Marcus",
-    age: 32,
-    role: "Quantum Engineer",
-    distance: "Orbital Station Alpha",
-    matchScore: 88,
-    bio: "If we match, it's basically quantum entanglement.",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80",
-    tags: ["Engineering", "Stargazing", "Tech"]
-  },
-  {
-    id: 3,
-    name: "Sarah",
-    age: 26,
-    role: "Orbital Navigator",
-    distance: "12,000 km Away",
-    matchScore: 97,
-    bio: "I know all the best views in the galaxy. Let's go for a spin.",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
-    tags: ["Navigation", "Thrill Seeker"]
-  }
-];
-
-const SwipeCard = ({ profile, onSwipe, index }) => {
+const SwipeCard = ({ profile, onSwipe, index, isExiting, exitDirection }) => {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
@@ -53,15 +17,19 @@ const SwipeCard = ({ profile, onSwipe, index }) => {
 
   const isTop = index === 0;
 
+  // Calculate programmatic exit animation
+  const exitX = exitDirection === 'left' ? -500 : exitDirection === 'right' ? 500 : 0;
+  const exitY = exitDirection === 'up' ? -500 : isTop ? 0 : index * 20;
+
   return (
     <motion.div
       className="absolute top-0 w-full max-w-sm"
-      style={{ x, rotate, opacity, zIndex: 10 - index }}
-      drag={isTop ? "x" : false}
+      style={{ x: isExiting ? exitX : x, rotate, opacity: isExiting ? 0 : opacity, zIndex: 10 - index }}
+      drag={isTop && !isExiting ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
       initial={{ scale: 0.95, y: 30 }}
-      animate={{ scale: isTop ? 1 : 0.95 - index * 0.05, y: isTop ? 0 : index * 20 }}
+      animate={{ scale: isTop && !isExiting ? 1 : 0.95 - index * 0.05, y: isExiting ? exitY : isTop ? 0 : index * 20, x: isExiting ? exitX : 0, opacity: isExiting ? 0 : 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       <div className="liquid-glass rounded-3xl overflow-hidden h-[600px] flex flex-col relative pointer-events-auto shadow-2xl">
@@ -102,11 +70,17 @@ const SwipeCard = ({ profile, onSwipe, index }) => {
   );
 };
 
-window.DiscoverPage = ({ onNavigate }) => {
-  const [profiles, setProfiles] = useState(PROFILES);
+window.DiscoverPage = ({ onNavigate, profiles, setProfiles }) => {
+  const [exitDirection, setExitDirection] = useState(null);
 
   const handleSwipe = (direction) => {
-    setProfiles((prev) => prev.slice(1));
+    setExitDirection(direction);
+    // Wait for the exit animation to complete before removing the profile
+    setTimeout(() => {
+      setProfiles((prev) => prev.slice(1));
+      setExitDirection(null);
+    }, 200);
+  };
     // In a real app, send swipe to backend here
   };
 
@@ -144,7 +118,14 @@ window.DiscoverPage = ({ onNavigate }) => {
           <div className="relative w-full max-w-sm h-[600px] flex justify-center">
             <AnimatePresence>
               {profiles.map((profile, index) => (
-                <SwipeCard key={profile.id} profile={profile} index={index} onSwipe={handleSwipe} />
+                <SwipeCard 
+                  key={profile.id} 
+                  profile={profile} 
+                  index={index} 
+                  onSwipe={handleSwipe}
+                  isExiting={index === 0 && exitDirection !== null}
+                  exitDirection={index === 0 ? exitDirection : null}
+                />
               ))}
             </AnimatePresence>
           </div>

@@ -1,28 +1,39 @@
 const { useState } = React;
 const { motion } = window.Motion;
 
-const MESSAGES = [
-  { id: 1, text: "Hey! Saw you're heading to Mars Base 4.", sender: 'them', time: '10:24 AM' },
-  { id: 2, text: "Yeah! It's my first deployment. Have you been?", sender: 'me', time: '10:26 AM' },
-  { id: 3, text: "Twice. The view of Olympus Mons at sunrise is incredible.", sender: 'them', time: '10:28 AM' },
-  { id: 4, text: "That sounds amazing. We should grab a space-coffee when I arrive.", sender: 'me', time: '10:30 AM' },
-];
-
-window.ChatPage = ({ onNavigate }) => {
-  const [messages, setMessages] = useState(MESSAGES);
+window.ChatPage = ({ onNavigate, messages, setMessages }) => {
   const [inputText, setInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
     
-    setMessages([...messages, {
+    // Add user message
+    const newMessages = [...messages, {
       id: Date.now(),
       text: inputText,
       sender: 'me',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }]);
+    }];
+    setMessages(newMessages);
     setInputText("");
+    
+    // Simulate partner typing
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages((prev) => [...prev, {
+        id: Date.now(),
+        text: "Scanning your coordinates... I'm down to meet up! 🚀",
+        sender: 'them',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+    }, 2500);
+  };
+
+  const handleAICopilot = () => {
+    setInputText("My warp drive is fully charged. When are we launching?");
   };
 
   return (
@@ -73,23 +84,32 @@ window.ChatPage = ({ onNavigate }) => {
         })}
 
         {/* 2026 Trend: Typing Indicator */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
-          className="self-start liquid-glass px-4 py-2 rounded-2xl rounded-bl-sm flex items-center gap-1"
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
-          <div className="w-1.5 h-1.5 rounded-full bg-white/60"></div>
-          <div className="w-1.5 h-1.5 rounded-full bg-white/80"></div>
-        </motion.div>
+        <AnimatePresence>
+          {isTyping && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
+              className="self-start liquid-glass px-4 py-2 rounded-2xl rounded-bl-sm flex items-center gap-1"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/60"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-white/80"></div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Input Area */}
       <div className="w-full max-w-2xl p-4 sticky bottom-0 bg-gradient-to-t from-black via-black/90 to-transparent">
         <form onSubmit={handleSend} className="liquid-glass rounded-full flex items-center p-1 pl-4 gap-2">
           {/* AI Co-Pilot Sparkle Icon */}
-          <button type="button" className="text-white/40 hover:text-sky-400 transition cursor-pointer flex-shrink-0">
+          <button 
+            type="button" 
+            onClick={handleAICopilot}
+            className="text-white/40 hover:text-sky-400 transition cursor-pointer flex-shrink-0"
+          >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
             </svg>
