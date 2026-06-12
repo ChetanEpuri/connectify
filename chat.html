@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Validate</title>
+    <meta name="description" content="Chat with your matches on Validate — secure, real-time messaging.">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="shared.js" defer></script>
+    <style>
+    .chat-layout{display:grid;grid-template-columns:360px 1fr 300px;height:calc(100vh - 60px);margin-top:60px;overflow:hidden}
+    .chat-sidebar{background:rgba(10,0,20,.6);border-right:1px solid var(--glass-border);display:flex;flex-direction:column;overflow:hidden}
+    .chat-sidebar-header{padding:1.25rem 1.25rem .75rem;border-bottom:1px solid rgba(255,255,255,.05)}
+    .chat-sidebar-header .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+    .chat-sidebar-header h2{font-size:1.25rem;font-weight:700}
+    .compose-btn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;color:white;font-size:1rem;cursor:pointer;transition:transform .2s}
+    .compose-btn:hover{transform:scale(1.1)}
+    .chat-search{width:100%;padding:.6rem 1rem .6rem 2.25rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--radius-full);color:var(--text);font-family:inherit;font-size:.85rem;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(255,255,255,0.3)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:.75rem center}
+    .chat-search:focus{border-color:var(--primary)}
+    .chat-filters{display:flex;gap:.25rem;padding:.75rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.05)}
+    .chat-filter-btn{padding:.35rem .75rem;background:none;border:1px solid transparent;border-radius:var(--radius-full);color:rgba(255,255,255,.45);font-size:.75rem;cursor:pointer;font-family:inherit;transition:all .2s}
+    .chat-filter-btn:hover{color:white;background:rgba(255,255,255,.04)}
+    .chat-filter-btn.active{color:var(--primary);border-color:rgba(255,51,153,.25);background:rgba(255,51,153,.06)}
+    .conversations-list{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent}
+    .conversation-item{display:flex;align-items:center;gap:.75rem;padding:.875rem 1.25rem;cursor:pointer;transition:background .15s;border-left:3px solid transparent;position:relative}
+    .conversation-item:hover{background:rgba(255,255,255,.025)}
+    .conversation-item.active{background:rgba(255,51,153,.04);border-left-color:var(--primary)}
+    .conv-avatar{position:relative;flex-shrink:0}
+    .conv-avatar img{width:48px;height:48px;border-radius:50%;object-fit:cover}
+    .online-dot{width:12px;height:12px;background:var(--success);border:2.5px solid var(--bg);border-radius:50%;position:absolute;bottom:0;right:0}
+    .conv-info{flex:1;min-width:0}
+    .conv-name{font-size:.9rem;font-weight:600;margin-bottom:.15rem;display:flex;align-items:center;gap:.4rem}
+    .conv-preview{font-size:.8rem;color:rgba(255,255,255,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .conv-meta{display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;flex-shrink:0}
+    .conv-time{font-size:.7rem;color:rgba(255,255,255,.3)}
+    .unread-badge{min-width:20px;height:20px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 .3rem}
+    .pin-icon{font-size:.65rem;color:rgba(255,255,255,.25)}
+
+    .chat-main{display:flex;flex-direction:column;overflow:hidden;background:rgba(10,0,20,.3)}
+    .chat-header{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.5rem;border-bottom:1px solid var(--glass-border);background:rgba(10,0,20,.6);backdrop-filter:blur(20px)}
+    .chat-header-info{flex:1}
+    .chat-header-name{font-size:1rem;font-weight:600}
+    .chat-header-status{font-size:.75rem;color:var(--success)}
+    .chat-header-status.offline{color:rgba(255,255,255,.35)}
+    .chat-header-actions{display:flex;gap:.5rem}
+    .chat-header-actions button{background:none;border:none;color:rgba(255,255,255,.45);font-size:1.1rem;padding:.4rem;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s}
+    .chat-header-actions button:hover{color:white;background:rgba(255,255,255,.05)}
+
+    .chat-messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:.35rem;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent}
+    .date-divider{text-align:center;font-size:.7rem;color:rgba(255,255,255,.25);padding:1rem 0;position:relative}
+    .date-divider::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.05)}
+    .date-divider span{background:rgba(10,0,20,.8);padding:0 .75rem;position:relative}
+    .message{display:flex;flex-direction:column;max-width:60%;animation:msgIn .3s ease}
+    @keyframes msgIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+    .message.sent{align-self:flex-end}
+    .message.received{align-self:flex-start}
+    .message-bubble{padding:.65rem 1rem;border-radius:1.15rem;position:relative;line-height:1.5;font-size:.9rem}
+    .message.sent .message-bubble{background:linear-gradient(135deg,var(--primary),var(--secondary));border-bottom-right-radius:.2rem}
+    .message.received .message-bubble{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-bottom-left-radius:.2rem}
+    .message-text{word-wrap:break-word}
+    .message-meta{font-size:.65rem;color:rgba(255,255,255,.3);margin-top:.2rem;display:flex;align-items:center;gap:.25rem}
+    .message.sent .message-meta{justify-content:flex-end}
+    .read-receipt{color:rgba(255,255,255,.35)}
+    .read-receipt.read{color:#4da6ff}
+    .message-reactions-bar{display:none;position:absolute;top:-.6rem;right:-.5rem;background:var(--card-bg);border:1px solid var(--glass-border);border-radius:var(--radius-full);padding:.15rem .3rem;gap:.15rem;z-index:5;backdrop-filter:blur(8px)}
+    .message-bubble:hover .message-reactions-bar{display:flex}
+    .reaction-btn{background:none;border:none;font-size:.8rem;cursor:pointer;padding:.1rem;transition:transform .15s}
+    .reaction-btn:hover{transform:scale(1.3)}
+    .message-reaction{display:inline-flex;align-items:center;gap:.15rem;padding:.1rem .35rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-full);font-size:.7rem;margin-top:.2rem;cursor:pointer}
+    .typing-indicator{align-self:flex-start;display:flex;gap:4px;padding:.65rem 1rem;background:rgba(255,255,255,.06);border-radius:1.15rem;border-bottom-left-radius:.2rem}
+    .typing-dot{width:7px;height:7px;background:rgba(255,255,255,.35);border-radius:50%;animation:typingBounce 1.4s ease-in-out infinite}
+    .typing-dot:nth-child(2){animation-delay:.2s}
+    .typing-dot:nth-child(3){animation-delay:.4s}
+    @keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+    .voice-message{display:flex;align-items:center;gap:.6rem;min-width:180px}
+    .voice-play{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem}
+    .waveform{display:flex;align-items:center;gap:2px;height:28px;flex:1}
+    .waveform-bar{width:3px;border-radius:3px;background:rgba(255,255,255,.5)}
+    .voice-duration{font-size:.7rem;color:rgba(255,255,255,.4)}
+
+    .chat-input-area{display:flex;align-items:flex-end;gap:.5rem;padding:1rem 1.5rem;border-top:1px solid var(--glass-border);background:rgba(10,0,20,.8);backdrop-filter:blur(20px)}
+    .input-actions{display:flex;gap:.15rem}
+    .input-actions button{background:none;border:none;color:rgba(255,255,255,.4);font-size:1.15rem;padding:.45rem;border-radius:50%;cursor:pointer;transition:all .15s}
+    .input-actions button:hover{color:var(--primary);background:rgba(255,51,153,.08)}
+    .chat-input-area textarea{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:1.25rem;padding:.65rem 1rem;color:var(--text);font-family:inherit;font-size:.9rem;resize:none;max-height:140px;outline:none;line-height:1.4;min-height:38px}
+    .chat-input-area textarea:focus{border-color:var(--primary)}
+    .char-count{font-size:.6rem;color:rgba(255,255,255,.25);text-align:right;padding-right:.5rem;margin-top:.1rem}
+    .char-count.warning{color:var(--warning)}
+    .send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .2s;flex-shrink:0}
+    .send-btn:disabled{opacity:.25;cursor:not-allowed}
+    .send-btn:not(:disabled):hover{transform:scale(1.1);box-shadow:0 0 20px var(--glow-primary)}
+
+    .chat-profile-panel{background:rgba(10,0,20,.6);border-left:1px solid var(--glass-border);padding:2rem 1.25rem;overflow-y:auto;text-align:center;scrollbar-width:thin}
+    .panel-avatar{width:100px;height:100px;border-radius:50%;margin:0 auto 1rem;object-fit:cover;border:3px solid var(--primary)}
+    .panel-name{font-size:1.1rem;font-weight:700;margin-bottom:.15rem}
+    .panel-details{font-size:.8rem;color:rgba(255,255,255,.45);margin-bottom:1rem}
+    .panel-link{display:inline-block;padding:.4rem 1rem;border:1px solid var(--glass-border);border-radius:var(--radius-full);font-size:.8rem;color:rgba(255,255,255,.6);transition:all .2s;margin-bottom:1.5rem}
+    .panel-link:hover{border-color:var(--primary);color:var(--primary)}
+    .panel-section{text-align:left;margin-bottom:1.5rem}
+    .panel-section h4{font-size:.75rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
+    .panel-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+    .panel-tag{padding:.25rem .5rem;background:rgba(255,51,153,.06);border:1px solid rgba(255,51,153,.1);border-radius:var(--radius-full);font-size:.7rem}
+    .panel-compat{background:linear-gradient(135deg,rgba(255,51,153,.1),rgba(102,0,255,.1));border:1px solid rgba(255,51,153,.15);border-radius:var(--radius-lg);padding:1rem;margin-bottom:1.5rem;text-align:center}
+    .panel-compat .compat-num{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .panel-compat .compat-label{font-size:.75rem;color:rgba(255,255,255,.4)}
+    .panel-actions{display:flex;flex-direction:column;gap:.5rem;margin-top:1.5rem}
+    .panel-action{display:flex;align-items:center;gap:.5rem;padding:.6rem .75rem;background:none;border:none;border-radius:var(--radius-sm);color:rgba(255,255,255,.5);font-size:.8rem;cursor:pointer;font-family:inherit;transition:all .15s;text-align:left}
+    .panel-action:hover{background:rgba(255,255,255,.03);color:white}
+    .panel-action.danger{color:var(--danger)}
+    .panel-action.danger:hover{background:rgba(255,68,68,.06)}
+
+    @media(max-width:1200px){.chat-layout{grid-template-columns:360px 1fr}.chat-profile-panel{display:none}}
+    @media(max-width:768px){.chat-layout{grid-template-columns:1fr}.chat-sidebar{display:none}.chat-sidebar.show{display:flex;position:fixed;inset:0;z-index:100;width:100%}}
+    </style>
+</head>
+<body>
+    <nav class="app-nav"><div class="nav-content"><a href="index.html" class="logo">Validate</a><div class="nav-icons"><a href="discover.html" class="nav-icon" title="Discover">💖</a><a href="matches.html" class="nav-icon" title="Matches">✨</a><a href="chat.html" class="nav-icon" title="Chat" style="opacity:1" aria-current="page">💬</a><a href="home.html" class="nav-icon" title="Browse">🏠</a><a href="settings.html" class="nav-icon" title="Settings">⚙️</a><a href="profile.html" class="nav-icon profile-nav-icon" title="Profile"><img src="/api/placeholder/36/36" alt="You"></a></div></div></nav>
+
+    <div class="chat-layout">
+        <!-- Conversations sidebar -->
+        <aside class="chat-sidebar" id="chatSidebar" role="complementary" aria-label="Conversations">
+            <div class="chat-sidebar-header">
+                <div class="header-row">
+                    <h2>Messages</h2>
+                    <button class="compose-btn" title="New message" aria-label="Compose new message">✏️</button>
+                </div>
+                <input type="search" class="chat-search" id="chatSearch" placeholder="Search conversations..." aria-label="Search conversations">
+            </div>
+            <div class="chat-filters" role="tablist">
+                <button class="chat-filter-btn active" data-filter="all" role="tab">All</button>
+                <button class="chat-filter-btn" data-filter="unread" role="tab">Unread</button>
+                <button class="chat-filter-btn" data-filter="matches" role="tab">Matches</button>
+            </div>
+            <div class="conversations-list" id="convList" role="list"></div>
+        </aside>
+
+        <!-- Chat area -->
+        <main class="chat-main" role="main" aria-label="Chat">
+            <div class="chat-header" id="chatHeader">
+                <div class="conv-avatar">
+                    <img id="headerAvatar" src="" alt="">
+                    <div class="online-dot" id="headerOnline"></div>
+                </div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="headerName">Select a conversation</div>
+                    <div class="chat-header-status" id="headerStatus">Choose from the left panel</div>
+                </div>
+                <div class="chat-header-actions">
+                    <button title="Voice call" aria-label="Voice call">📞</button>
+                    <button title="Video call" aria-label="Video call">📹</button>
+                    <button title="View profile" aria-label="View profile">👤</button>
+                    <button title="More options" aria-label="More options">⋯</button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <div class="input-actions">
+                    <button title="Attach file" aria-label="Attach file">+</button>
+                    <button title="Send photo" aria-label="Send photo">📷</button>
+                    <button title="GIF" aria-label="Send GIF" style="font-size:.8rem;font-weight:700">GIF</button>
+                    <button title="Emoji" aria-label="Insert emoji">😊</button>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column">
+                    <textarea id="messageInput" placeholder="Type a message..." maxlength="2000" rows="1" aria-label="Message input"></textarea>
+                    <div class="char-count" id="charCount" style="display:none"></div>
+                </div>
+                <button class="send-btn" id="sendBtn" disabled title="Send message" aria-label="Send">➤</button>
+            </div>
+        </main>
+
+        <!-- Profile panel -->
+        <aside class="chat-profile-panel" id="profilePanel" role="complementary" aria-label="Contact profile">
+            <img class="panel-avatar" id="panelAvatar" src="" alt="">
+            <div class="panel-name" id="panelName">—</div>
+            <div class="panel-details" id="panelDetails">—</div>
+            <a href="profile.html" class="panel-link">View Full Profile</a>
+            <div class="panel-compat">
+                <div class="compat-num" id="panelCompat">—</div>
+                <div class="compat-label">Match Compatibility</div>
+            </div>
+            <div class="panel-section">
+                <h4>Shared Interests</h4>
+                <div class="panel-tags" id="panelTags"></div>
+            </div>
+            <div class="panel-actions">
+                <button class="panel-action" aria-label="Mute notifications">🔕 Mute Notifications</button>
+                <button class="panel-action" aria-label="Search messages">🔍 Search in Chat</button>
+                <button class="panel-action danger" aria-label="Block user">🚫 Block User</button>
+                <button class="panel-action danger" aria-label="Report user">⚠ Report</button>
+            </div>
+        </aside>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const { Security, Toast, generateAvatarURL } = window.Validate;
+    const rateLimiter = Security.createRateLimiter(5, 10000);
+
+    const conversations = [
+        {id:1,name:'Sofia Chen',age:26,location:'San Francisco',online:true,unread:3,pinned:true,compat:97,interests:['Technology','Food','Art'],
+         messages:[
+            {text:'Hey! I saw we matched on 97% — that\'s wild 😄',sent:false,time:'10:15 AM',status:'read'},
+            {text:'Right?? I almost didn\'t believe it. What are the odds?',sent:true,time:'10:18 AM',status:'read'},
+            {text:'So I noticed you\'re into neuroscience AND cooking. That\'s an amazing combo',sent:false,time:'10:20 AM',status:'read'},
+            {text:'Ha! Yeah, I love understanding how taste works at a molecular level',sent:true,time:'10:22 AM',status:'read'},
+            {text:'Ok that\'s actually fascinating. Do you do any molecular gastronomy?',sent:false,time:'10:24 AM',status:'read'},
+            {text:'A little bit! I made this passion fruit caviar last week that turned out amazing',sent:true,time:'10:26 AM',status:'delivered'},
+            {text:'You HAVE to show me that sometime. I\'m a total foodie',sent:false,time:'10:28 AM',status:'read'},
+        ]},
+        {id:2,name:'Luna Kim',age:27,location:'Palo Alto',online:true,unread:1,pinned:false,compat:93,interests:['Art','Travel','Photography'],
+         messages:[
+            {text:'Your watercolors are incredible! I saw them in your profile',sent:true,time:'9:45 AM',status:'read'},
+            {text:'Thank you so much! 🎨 That means a lot',sent:false,time:'9:52 AM',status:'read'},
+            {text:'Do you sell prints? I\'d love one for my apartment',sent:true,time:'9:55 AM',status:'delivered'},
+            {text:'I\'ve been thinking about it! Maybe I should open an Etsy',sent:false,time:'10:30 AM',status:''},
+        ]},
+        {id:3,name:'Daniel Park',age:30,location:'Fremont',online:false,unread:0,pinned:false,compat:92,interests:['Music','Cooking','Fitness'],
+         messages:[
+            {text:'So I hear you do stand-up comedy AND emergency medicine?',sent:true,time:'Yesterday',status:'read'},
+            {text:'Yep! Turns out both require staying calm under pressure 😂',sent:false,time:'Yesterday',status:'read'},
+            {text:'That\'s the best way I\'ve ever heard someone describe stand-up',sent:true,time:'Yesterday',status:'read'},
+        ]},
+        {id:4,name:'Alex Morgan',age:27,location:'San Francisco',online:true,unread:0,pinned:true,compat:95,interests:['Photography','Travel','Food'],
+         messages:[
+            {text:'That Tokyo ramen story in your prompt had me hooked',sent:true,time:'Monday',status:'read'},
+            {text:'It was life-changing! The old man running the shop didn\'t speak English but food is universal',sent:false,time:'Monday',status:'read'},
+        ]},
+        {id:5,name:'Priya Sharma',age:23,location:'Sunnyvale',online:false,unread:0,pinned:false,compat:90,interests:['Gaming','Technology','Art'],
+         messages:[
+            {text:'What game are you working on at your studio?',sent:true,time:'Sunday',status:'read'},
+            {text:'It\'s a cozy sim where you run a tea shop! Very chill vibes',sent:false,time:'Sunday',status:'read'},
+        ]},
+        {id:6,name:'Marcus Thompson',age:31,location:'San Jose',online:false,unread:2,pinned:false,compat:89,interests:['Technology','Food','Travel'],
+         messages:[
+            {text:'That espresso martini challenge is ON. When and where? 🍸',sent:false,time:'Saturday',status:''},
+            {text:'Also I just tried a new recipe with cardamom and espresso',sent:false,time:'Saturday',status:''},
+        ]},
+        {id:7,name:'Elena Vasquez',age:25,location:'Santa Cruz',online:true,unread:0,pinned:false,compat:88,interests:['Sports','Travel','Photography'],
+         messages:[
+            {text:'You had me at "I talk about octopuses too much" 🐙',sent:true,time:'Friday',status:'read'},
+        ]},
+        {id:8,name:'James Rivera',age:29,location:'Oakland',online:false,unread:0,pinned:false,compat:94,interests:['Music','Fitness','Photography'],
+         messages:[
+            {text:'The PCT in 4 months?! That\'s legendary. What was the hardest part?',sent:true,time:'Thursday',status:'delivered'},
+        ]}
+    ];
+
+    let activeConv = null;
+
+    // Render conversation list
+    function renderConvList(filter = 'all', search = '') {
+        const list = document.getElementById('convList');
+        list.innerHTML = '';
+        let filtered = conversations;
+        if (filter === 'unread') filtered = filtered.filter(c => c.unread > 0);
+        if (search) filtered = filtered.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+        filtered.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+        filtered.forEach(conv => {
+            const item = document.createElement('div');
+            item.className = 'conversation-item' + (activeConv && activeConv.id === conv.id ? ' active' : '');
+            item.setAttribute('role', 'listitem');
+            item.setAttribute('tabindex', '0');
+            item.setAttribute('aria-label', `${conv.name}${conv.unread ? `, ${conv.unread} unread` : ''}`);
+
+            const avatarWrap = document.createElement('div');
+            avatarWrap.className = 'conv-avatar';
+            const avatarImg = document.createElement('img');
+            avatarImg.src = generateAvatarURL(conv.name);
+            avatarImg.alt = conv.name;
+            avatarWrap.appendChild(avatarImg);
+            if (conv.online) {
+                const dot = document.createElement('div');
+                dot.className = 'online-dot';
+                avatarWrap.appendChild(dot);
+            }
+            item.appendChild(avatarWrap);
+
+            const info = document.createElement('div');
+            info.className = 'conv-info';
+            const nameEl = document.createElement('div');
+            nameEl.className = 'conv-name';
+            nameEl.textContent = conv.name;
+            if (conv.pinned) {
+                const pin = document.createElement('span');
+                pin.className = 'pin-icon';
+                pin.textContent = '📌';
+                nameEl.appendChild(pin);
+            }
+            info.appendChild(nameEl);
+            const preview = document.createElement('div');
+            preview.className = 'conv-preview';
+            const lastMsg = conv.messages[conv.messages.length - 1];
+            preview.textContent = (lastMsg.sent ? 'You: ' : '') + lastMsg.text;
+            info.appendChild(preview);
+            item.appendChild(info);
+
+            const meta = document.createElement('div');
+            meta.className = 'conv-meta';
+            const time = document.createElement('div');
+            time.className = 'conv-time';
+            time.textContent = lastMsg.time;
+            meta.appendChild(time);
+            if (conv.unread > 0) {
+                const badge = document.createElement('div');
+                badge.className = 'unread-badge';
+                badge.textContent = conv.unread;
+                meta.appendChild(badge);
+            }
+            item.appendChild(meta);
+
+            item.addEventListener('click', () => openConversation(conv));
+            item.addEventListener('keydown', e => { if (e.key === 'Enter') openConversation(conv); });
+            list.appendChild(item);
+        });
+    }
+
+    // Open conversation
+    function openConversation(conv) {
+        activeConv = conv;
+        conv.unread = 0;
+        renderConvList();
+
+        // Update header
+        document.getElementById('headerAvatar').src = generateAvatarURL(conv.name);
+        document.getElementById('headerAvatar').alt = conv.name;
+        document.getElementById('headerName').textContent = conv.name;
+        const statusEl = document.getElementById('headerStatus');
+        statusEl.textContent = conv.online ? 'Active now' : 'Last seen recently';
+        statusEl.className = 'chat-header-status' + (conv.online ? '' : ' offline');
+        document.getElementById('headerOnline').style.display = conv.online ? '' : 'none';
+
+        // Update profile panel
+        document.getElementById('panelAvatar').src = generateAvatarURL(conv.name, 200);
+        document.getElementById('panelName').textContent = conv.name + ', ' + conv.age;
+        document.getElementById('panelDetails').textContent = conv.location;
+        document.getElementById('panelCompat').textContent = conv.compat + '%';
+        const tagsEl = document.getElementById('panelTags');
+        tagsEl.innerHTML = '';
+        conv.interests.forEach(i => {
+            const tag = document.createElement('span');
+            tag.className = 'panel-tag';
+            tag.textContent = i;
+            tagsEl.appendChild(tag);
+        });
+
+        renderMessages(conv);
+    }
+
+    // Render messages
+    function renderMessages(conv) {
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = '';
+
+        const divider = document.createElement('div');
+        divider.className = 'date-divider';
+        const divSpan = document.createElement('span');
+        divSpan.textContent = 'Today';
+        divider.appendChild(divSpan);
+        container.appendChild(divider);
+
+        conv.messages.forEach(msg => {
+            container.appendChild(createMessageEl(msg));
+        });
+
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function createMessageEl(msg) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message ' + (msg.sent ? 'sent' : 'received');
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+
+        // Reaction bar
+        const reactions = document.createElement('div');
+        reactions.className = 'message-reactions-bar';
+        ['❤️','😂','👍','😮','😢','🔥'].forEach(emoji => {
+            const btn = document.createElement('button');
+            btn.className = 'reaction-btn';
+            btn.textContent = emoji;
+            btn.setAttribute('aria-label', 'React with ' + emoji);
+            btn.addEventListener('click', () => {
+                let existing = wrapper.querySelector('.message-reaction');
+                if (!existing) {
+                    existing = document.createElement('div');
+                    existing.className = 'message-reaction';
+                    wrapper.appendChild(existing);
+                }
+                existing.textContent = emoji;
+                if (typeof gsap !== 'undefined') gsap.from(existing, {scale: 0, duration: 0.3, ease: 'back.out(3)'});
+            });
+            reactions.appendChild(btn);
+        });
+        bubble.appendChild(reactions);
+
+        const text = document.createElement('p');
+        text.className = 'message-text';
+        text.textContent = msg.text;
+        bubble.appendChild(text);
+        wrapper.appendChild(bubble);
+
+        const meta = document.createElement('div');
+        meta.className = 'message-meta';
+        const timeSpan = document.createElement('span');
+        timeSpan.textContent = msg.time;
+        meta.appendChild(timeSpan);
+        if (msg.sent && msg.status) {
+            const receipt = document.createElement('span');
+            receipt.className = 'read-receipt' + (msg.status === 'read' ? ' read' : '');
+            receipt.textContent = msg.status === 'read' ? '✓✓' : msg.status === 'delivered' ? '✓✓' : '✓';
+            meta.appendChild(receipt);
+        }
+        wrapper.appendChild(meta);
+        return wrapper;
+    }
+
+    // Send message
+    function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        if (!text || !activeConv) return;
+        if (text.length > 2000) { Toast.show('Message too long', 'error'); return; }
+        if (rateLimiter()) { Toast.show('Slow down! Too many messages', 'warning'); return; }
+
+        const msg = {text, sent: true, time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), status: 'sent'};
+        activeConv.messages.push(msg);
+
+        const container = document.getElementById('chatMessages');
+        const el = createMessageEl(msg);
+        container.appendChild(el);
+        container.scrollTop = container.scrollHeight;
+
+        input.value = '';
+        input.style.height = 'auto';
+        document.getElementById('sendBtn').disabled = true;
+        document.getElementById('charCount').style.display = 'none';
+        renderConvList();
+
+        // Simulate typing and reply
+        setTimeout(() => {
+            const typing = document.createElement('div');
+            typing.className = 'typing-indicator';
+            typing.id = 'typingIndicator';
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                typing.appendChild(dot);
+            }
+            container.appendChild(typing);
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                typing.remove();
+                const replies = [
+                    'That sounds amazing! Tell me more 😊',
+                    'Haha I love that!',
+                    'Same here! We have so much in common',
+                    'Oh wow, I never thought of it that way',
+                    'You\'re making me smile right now 😄',
+                    'We should definitely meet up sometime!',
+                    'I totally agree. When are you free?',
+                ];
+                const reply = {text: replies[Math.floor(Math.random() * replies.length)], sent: false, time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), status: ''};
+                activeConv.messages.push(reply);
+                const replyEl = createMessageEl(reply);
+                container.appendChild(replyEl);
+                container.scrollTop = container.scrollHeight;
+                renderConvList();
+            }, 1500 + Math.random() * 1500);
+        }, 1200);
+    }
+
+    // Input handling
+    const input = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const charCount = document.getElementById('charCount');
+
+    input.addEventListener('input', () => {
+        sendBtn.disabled = !input.value.trim();
+        // Auto-resize
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+        // Char count
+        const len = input.value.length;
+        if (len > 1800) {
+            charCount.style.display = '';
+            charCount.textContent = len + '/2000';
+            charCount.className = 'char-count' + (len > 1950 ? ' warning' : '');
+        } else {
+            charCount.style.display = 'none';
+        }
+    });
+
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    // Filters
+    document.querySelectorAll('.chat-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.chat-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderConvList(btn.dataset.filter, document.getElementById('chatSearch').value);
+        });
+    });
+
+    // Search
+    document.getElementById('chatSearch').addEventListener('input', e => {
+        const activeFilter = document.querySelector('.chat-filter-btn.active');
+        renderConvList(activeFilter ? activeFilter.dataset.filter : 'all', e.target.value);
+    });
+
+    // Init
+    renderConvList();
+    if (conversations.length > 0) openConversation(conversations[0]);
+});
+</script>
+</body>
+</html>

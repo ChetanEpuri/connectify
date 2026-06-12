@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover the story behind Validate — where technology meets human connection to revolutionize modern dating.">
+    <title>About | Validate</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js" defer></script>
+    <script src="shared.js" defer></script>
+</head>
+<body>
+    <div class="loader"><div class="loader-content"><div class="loader-text">Validate</div><div class="loader-progress"><div class="loader-bar"></div></div></div></div>
+    <div class="canvas-container"></div>
+
+    <nav class="navigation">
+        <div class="nav-wrapper">
+            <a href="index.html" class="logo">Validate</a>
+            <div class="menu">
+                <a href="index.html" class="menu-link">Home</a>
+                <a href="about.html" class="menu-link active">About</a>
+                <a href="home.html" class="menu-link">Discover</a>
+                <a href="joinnow.html" class="menu-link">Join Now</a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Beyond Algorithms<span>Humanizing Digital Connections</span></h1>
+                <p class="hero-description">Born from neuroscience and advanced AI, Validate reimagines dating as a journey of authentic human discovery.</p>
+                <div class="hero-stats">
+                    <div class="stat-card"><h3>12M+</h3><p>Meaningful Matches</p></div>
+                    <div class="stat-card"><h3>93%</h3><p>Success Rate</p></div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="scroll-indicator-text">Our Story</div>
+                <div class="scroll-indicator-line"></div>
+            </div>
+        </section>
+
+        <section class="section" id="mission">
+            <div class="section-content">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-badge">Our Origin</div>
+                        <div class="feature-content">
+                            <div class="feature-icon">🚀</div>
+                            <h3 class="feature-title">From Lab to Love</h3>
+                            <p>Founded in 2023 by behavioral scientists and AI researchers from Stanford's Human Connection Lab, Validate combines 7 years of relationship psychology research with cutting-edge machine learning.</p>
+                            <div class="feature-progress"><div class="feature-progress-bar" style="width:100%"></div></div>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-badge">The Shift</div>
+                        <div class="feature-content">
+                            <div class="feature-icon">🧠</div>
+                            <h3 class="feature-title">Neuro-Matching™</h3>
+                            <p>Our proprietary compatibility system analyzes 143 cognitive and emotional markers, creating connections that spark both chemistry and lasting compatibility.</p>
+                            <div class="feature-stats">
+                                <div class="feature-stat"><h4>143</h4><p>Compatibility Markers</p></div>
+                                <div class="feature-stat"><h4>8D</h4><p>Personality Mapping</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="parallax-section" id="team">
+            <div class="parallax-content">
+                <h2 class="parallax-title">The Architects of Trust</h2>
+                <p class="parallax-description">A multidisciplinary team redefining connection through technology</p>
+                <div class="parallax-cards">
+                    <div class="team-card">
+                        <div class="preview-image"></div>
+                        <h3>Dr. Elena Torres</h3>
+                        <p>CEO & Behavioral Scientist</p>
+                        <div class="team-bio">15 years researching relationship dynamics at Stanford's HCI Lab</div>
+                    </div>
+                    <div class="team-card">
+                        <div class="preview-image"></div>
+                        <h3>James Chen</h3>
+                        <p>CTO & AI Architect</p>
+                        <div class="team-bio">Machine learning pioneer with 8 patents in neural matching</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="experience-section" id="values">
+            <div class="experience-content" style="grid-template-columns:1fr">
+                <div class="experience-text" style="text-align:center">
+                    <h2>Our Ethical Foundation</h2>
+                    <p>Principles that power every connection</p>
+                </div>
+                <div class="values-grid">
+                    <div class="value-card"><div class="value-icon">🔐</div><h3>Radical Transparency</h3><p>Open-source algorithms with user-controlled data</p></div>
+                    <div class="value-card"><div class="value-icon">⚖️</div><h3>Equal Representation</h3><p>Gender-balanced matching systems</p></div>
+                    <div class="value-card"><div class="value-icon">🌐</div><h3>Global Standards</h3><p>GDPR-compliant with military-grade encryption</p></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand"><h3>Validate</h3><p>Love Without Lies. Dating Without Doubt.</p></div>
+            <div class="footer-links">
+                <div class="link-group"><h4>Company</h4><ul><li><a href="about.html">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li></ul></div>
+                <div class="link-group"><h4>Guarantee</h4><ul><li><a href="#">90-Day Match Promise</a></li><li><a href="#">Success Stories</a></li><li><a href="#">Member Support</a></li></ul></div>
+                <div class="link-group"><h4>Legal</h4><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Cookies</a></li></ul></div>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2025 Validate – 417,921 Real Connections and Counting</p></div>
+    </footer>
+</body>
+</html>

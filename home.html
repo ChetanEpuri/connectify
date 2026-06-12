@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Validate</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="shared.js" defer></script>
+</head>
+<body>
+    <nav class="app-nav"><div class="nav-content"><a href="index.html" class="logo">Validate</a><div class="nav-icons"><a href="discover.html" class="nav-icon" title="Discover">💖</a><a href="matches.html" class="nav-icon" title="Matches">✨</a><a href="chat.html" class="nav-icon" title="Chat"><span style="position:relative">💬<span class="notification-badge">3</span></span></a><a href="home.html" class="nav-icon" title="Browse" style="opacity:1" aria-current="page">🏠</a><a href="settings.html" class="nav-icon" title="Settings">⚙️</a><a href="profile.html" class="nav-icon profile-nav-icon" title="Profile"><img src="/api/placeholder/36/36" alt="You"></a></div></div></nav>
+
+
+    <div class="app-layout">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Discovery Filters</h3>
+                <div class="filter-group">
+                    <label class="filter-label">Distance: <strong id="distVal">25 mi</strong></label>
+                    <input type="range" min="1" max="100" value="25" id="distSlider">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Age Range</label>
+                    <div style="display:flex;gap:0.5rem;align-items:center">
+                        <input type="number" class="filter-input" value="20" min="18" max="99" id="ageMin" style="width:50%">
+                        <span style="color:rgba(255,255,255,0.3)">—</span>
+                        <input type="number" class="filter-input" value="35" min="18" max="99" id="ageMax" style="width:50%">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Interests</label>
+                    <select class="filter-input" id="interestFilter">
+                        <option value="">All Interests</option>
+                        <option>Travel</option><option>Music</option><option>Sports</option>
+                        <option>Art</option><option>Technology</option><option>Food</option>
+                        <option>Fitness</option><option>Photography</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <h3>Quick Stats</h3>
+                <p style="font-size:0.85rem;color:rgba(255,255,255,0.5)">
+                    <span style="color:var(--primary);font-weight:700">12</span> new matches today<br>
+                    <span style="color:var(--success);font-weight:700">3</span> unread messages
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main Match Grid -->
+        <section>
+            <div class="matches-grid" id="matchesGrid">
+                <!-- Skeleton loaders shown first, then replaced -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const { Security, Toast, generateAvatarURL, debounce } = window.Validate;
+        const grid = document.getElementById('matchesGrid');
+
+        const mockProfiles = [
+            { name: 'Sara', age: 24, distance: 3, bio: 'Coffee addict and sunset chaser. Looking for a travel buddy with good music taste.', interests: ['Travel', 'Music', 'Photography'], compat: 96, online: true },
+            { name: 'James', age: 27, distance: 8, bio: 'Rock climbing instructor by day, pizza connoisseur by night. Let\'s find the best slice in the city.', interests: ['Fitness', 'Food', 'Adventure'], compat: 91, online: false },
+            { name: 'Emma', age: 25, distance: 5, bio: 'Graphic designer who paints murals on weekends. I\'ll draw your portrait on our first date.', interests: ['Art', 'Design', 'Music'], compat: 94, online: true },
+            { name: 'Alex', age: 29, distance: 12, bio: 'Data scientist with a poetry habit. Can explain blockchain or Shakespeare with equal enthusiasm.', interests: ['Technology', 'Books', 'Coffee'], compat: 88, online: false },
+            { name: 'Priya', age: 26, distance: 6, bio: 'Yoga teacher and amateur chef. I make the best chai you\'ll ever taste.', interests: ['Fitness', 'Food', 'Travel'], compat: 93, online: true },
+            { name: 'Marcus', age: 28, distance: 15, bio: 'Jazz trumpet player and history nerd. I know the best speakeasy in every city.', interests: ['Music', 'History', 'Food'], compat: 87, online: false }
+        ];
+
+        // Show skeletons
+        function showSkeletons() {
+            grid.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const skel = document.createElement('div');
+                skel.className = 'match-card skeleton-card skeleton';
+                skel.innerHTML = '<div style="height:300px"></div><div style="padding:1.25rem"><div class="skeleton-text skeleton" style="width:60%"></div><div class="skeleton-text skeleton" style="width:80%"></div><div class="skeleton-text skeleton" style="width:40%"></div></div>';
+                grid.appendChild(skel);
+            }
+        }
+
+        function createMatchCard(p) {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+
+            // Photo
+            const photo = document.createElement('div');
+            photo.className = 'match-photo';
+            const img = document.createElement('img');
+            img.src = generateAvatarURL(p.name, 400);
+            img.alt = p.name;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            photo.appendChild(img);
+
+            const compatBadge = document.createElement('div');
+            compatBadge.className = 'match-compatibility';
+            compatBadge.textContent = p.compat + '% Match';
+            photo.appendChild(compatBadge);
+
+            if (p.online) {
+                const onlineEl = document.createElement('div');
+                onlineEl.className = 'match-online';
+                onlineEl.innerHTML = '<span class="online-dot"></span> Online now';
+                photo.appendChild(onlineEl);
+            }
+            card.appendChild(photo);
+
+            // Info
+            const info = document.createElement('div');
+            info.className = 'match-info';
+
+            const header = document.createElement('div');
+            header.className = 'match-header';
+            const nameAge = document.createElement('span');
+            nameAge.className = 'match-name-age';
+            nameAge.textContent = `${p.name}, ${p.age}`;
+            header.appendChild(nameAge);
+            const dist = document.createElement('span');
+            dist.className = 'match-distance';
+            dist.textContent = `${p.distance} mi`;
+            header.appendChild(dist);
+            info.appendChild(header);
+
+            const bio = document.createElement('p');
+            bio.className = 'match-bio';
+            bio.textContent = p.bio;
+            info.appendChild(bio);
+
+            const tags = document.createElement('div');
+            tags.className = 'match-interests';
+            p.interests.forEach(t => {
+                const tag = document.createElement('span');
+                tag.className = 'interest-tag';
+                tag.textContent = t;
+                tags.appendChild(tag);
+            });
+            info.appendChild(tags);
+
+            const actions = document.createElement('div');
+            actions.className = 'match-actions';
+            const passBtn = document.createElement('button');
+            passBtn.className = 'action-btn pass-btn';
+            passBtn.textContent = '✕';
+            passBtn.title = 'Pass';
+            passBtn.addEventListener('click', () => {
+                gsap.to(card, { x: -300, opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: () => { card.remove(); } });
+                Toast.show('Maybe next time', 'info', 1500);
+            });
+            const likeBtn = document.createElement('button');
+            likeBtn.className = 'action-btn like-btn';
+            likeBtn.textContent = '❤️';
+            likeBtn.title = 'Like';
+            likeBtn.addEventListener('click', () => {
+                gsap.to(card, { x: 300, opacity: 0, rotation: 10, duration: 0.4, ease: 'power2.in', onComplete: () => { card.remove(); } });
+                Toast.show(`You liked ${p.name}! 💕`, 'success', 2000);
+            });
+            const superBtn = document.createElement('button');
+            superBtn.className = 'action-btn superlike-btn';
+            superBtn.textContent = '⭐';
+            superBtn.title = 'Super Like';
+            superBtn.addEventListener('click', () => {
+                gsap.to(card, { y: -300, opacity: 0, scale: 1.1, duration: 0.4, ease: 'power2.in', onComplete: () => { card.remove(); } });
+                Toast.show(`Super Like sent to ${p.name}! ⭐`, 'info', 2000);
+            });
+            actions.appendChild(passBtn);
+            actions.appendChild(superBtn);
+            actions.appendChild(likeBtn);
+            info.appendChild(actions);
+            card.appendChild(info);
+
+            return card;
+        }
+
+        function renderProfiles(profiles) {
+            grid.innerHTML = '';
+            if (profiles.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h3>No matches found</h3><p>Try adjusting your filters to find more people.</p></div>';
+                return;
+            }
+            const frag = document.createDocumentFragment();
+            profiles.forEach((p, i) => {
+                const card = createMatchCard(p);
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                frag.appendChild(card);
+            });
+            grid.appendChild(frag);
+            gsap.to(grid.children, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out' });
+        }
+
+        // Init
+        showSkeletons();
+        setTimeout(() => renderProfiles(mockProfiles), 800);
+
+        // Filters
+        const distSlider = document.getElementById('distSlider');
+        const distVal = document.getElementById('distVal');
+        distSlider.addEventListener('input', debounce(() => {
+            distVal.textContent = distSlider.value + ' mi';
+            const filtered = mockProfiles.filter(p => p.distance <= parseInt(distSlider.value));
+            renderProfiles(filtered);
+        }, 300));
+    });
+    </script>
+</body>
+</html>

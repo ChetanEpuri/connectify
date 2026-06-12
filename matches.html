@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches | Validate</title>
+    <meta name="description" content="View your matches on Validate — real connections with compatible people.">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="shared.js" defer></script>
+    <style>
+    .matches-layout{padding:5rem 2rem 2rem;min-height:100vh}
+    .matches-main{max-width:1200px;margin:0 auto}
+    .matches-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+    .matches-header h1{font-size:1.75rem;font-weight:800;display:flex;align-items:center;gap:.75rem}
+    .match-count-badge{background:linear-gradient(135deg,var(--primary),var(--secondary));padding:.25rem .75rem;border-radius:var(--radius-full);font-size:.8rem;font-weight:600}
+    .sort-select{padding:.45rem .85rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--radius-md);color:var(--text);font-family:inherit;font-size:.8rem;cursor:pointer;outline:none}
+    .sort-select:focus{border-color:var(--primary)}
+    .new-matches-section{margin-bottom:2rem}
+    .new-matches-section h2{font-size:1.1rem;font-weight:600;margin-bottom:.75rem;color:rgba(255,255,255,.75)}
+    .new-matches-scroll{display:flex;gap:1.15rem;overflow-x:auto;padding:.75rem .25rem;scrollbar-width:none;scroll-snap-type:x mandatory}
+    .new-matches-scroll::-webkit-scrollbar{display:none}
+    .match-bubble{display:flex;flex-direction:column;align-items:center;gap:.4rem;min-width:80px;cursor:pointer;scroll-snap-align:start;text-decoration:none}
+    .match-bubble .bubble-img-wrap{position:relative}
+    .match-bubble img{width:72px;height:72px;border-radius:50%;border:3px solid var(--primary);padding:2px;object-fit:cover;transition:transform .25s;background:var(--bg)}
+    .match-bubble:hover img{transform:scale(1.08)}
+    .bubble-online{width:12px;height:12px;background:var(--success);border:2.5px solid var(--bg);border-radius:50%;position:absolute;bottom:2px;right:2px}
+    .bubble-new{position:absolute;top:-2px;right:-2px;background:linear-gradient(135deg,var(--primary),var(--accent));font-size:.55rem;font-weight:700;padding:.1rem .35rem;border-radius:var(--radius-full)}
+    .match-bubble .bubble-name{font-size:.75rem;color:rgba(255,255,255,.65);text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .filter-tabs{display:flex;gap:.35rem;margin-bottom:1.25rem;flex-wrap:wrap}
+    .filter-tab{padding:.45rem 1rem;background:none;border:1px solid transparent;border-radius:var(--radius-full);color:rgba(255,255,255,.45);font-size:.8rem;cursor:pointer;font-family:inherit;transition:all .2s}
+    .filter-tab:hover{color:white;background:rgba(255,255,255,.04)}
+    .filter-tab.active{color:var(--primary);border-color:rgba(255,51,153,.25);background:rgba(255,51,153,.06)}
+    .matches-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.25rem}
+    .match-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-xl);overflow:hidden;transition:transform .3s,box-shadow .3s}
+    .match-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(255,51,153,.1)}
+    .match-card-photo{height:220px;background:linear-gradient(135deg,#1a0a2e,#2a1040);position:relative;overflow:hidden}
+    .match-card-photo img{width:100%;height:100%;object-fit:cover}
+    .match-card-photo .gradient-overlay{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(10,0,20,.9))}
+    .card-compat{position:absolute;top:.75rem;right:.75rem;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:.3rem .65rem;border-radius:var(--radius-full);font-size:.7rem;font-weight:700}
+    .card-verified{position:absolute;top:.75rem;left:.75rem;background:rgba(0,204,136,.15);border:1px solid rgba(0,204,136,.3);padding:.2rem .5rem;border-radius:var(--radius-full);font-size:.65rem;color:var(--success)}
+    .card-active-dot{position:absolute;bottom:.75rem;right:.75rem;display:flex;align-items:center;gap:.3rem;font-size:.65rem;color:rgba(255,255,255,.5)}
+    .card-active-dot::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--success)}
+    .card-active-dot.offline::before{background:rgba(255,255,255,.2)}
+    .match-card-info{padding:1.15rem}
+    .match-card-info h3{font-size:1.1rem;font-weight:700;margin-bottom:.15rem}
+    .match-card-info h3 span{font-weight:400;color:rgba(255,255,255,.55);font-size:.95rem}
+    .card-location{font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;display:flex;align-items:center;gap:.25rem}
+    .card-interests{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.75rem}
+    .card-interest-tag{padding:.2rem .5rem;background:rgba(255,51,153,.05);border:1px solid rgba(255,51,153,.1);border-radius:var(--radius-full);font-size:.65rem;color:rgba(255,255,255,.6)}
+    .card-last-active{font-size:.7rem;color:rgba(255,255,255,.3);margin-bottom:.75rem}
+    .card-actions{display:flex;gap:.5rem}
+    .card-actions .cta-button{flex:1;padding:.55rem;font-size:.8rem}
+    .card-actions .secondary-btn{flex:.6;padding:.55rem;font-size:.8rem;background:none;border:1px solid var(--glass-border);border-radius:var(--radius-full);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;transition:all .2s;text-align:center;text-decoration:none}
+    .card-actions .secondary-btn:hover{border-color:white;color:white}
+    .card-actions .more-btn{width:36px;height:36px;border-radius:50%;background:none;border:1px solid var(--glass-border);color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .2s;flex-shrink:0}
+    .card-actions .more-btn:hover{border-color:white;color:white}
+    .load-more{display:flex;justify-content:center;margin-top:2rem}
+    .load-more button{padding:.7rem 2rem;background:none;border:1px solid var(--glass-border);border-radius:var(--radius-full);color:rgba(255,255,255,.55);font-family:inherit;font-size:.85rem;cursor:pointer;transition:all .2s}
+    .load-more button:hover{border-color:var(--primary);color:var(--primary)}
+    .empty-matches{text-align:center;padding:4rem 2rem}
+    .empty-matches .icon{font-size:3.5rem;margin-bottom:1rem}
+    .empty-matches h3{font-size:1.3rem;margin-bottom:.5rem}
+    .empty-matches p{color:rgba(255,255,255,.45);max-width:400px;margin:0 auto 1.25rem}
+    @media(max-width:768px){.matches-grid{grid-template-columns:1fr}.matches-layout{padding:5rem 1rem 1.5rem}}
+    </style>
+</head>
+<body>
+    <nav class="app-nav"><div class="nav-content"><a href="index.html" class="logo">Validate</a><div class="nav-icons"><a href="discover.html" class="nav-icon" title="Discover">💖</a><a href="matches.html" class="nav-icon" title="Matches" style="opacity:1" aria-current="page">✨</a><a href="chat.html" class="nav-icon" title="Chat">💬</a><a href="home.html" class="nav-icon" title="Browse">🏠</a><a href="settings.html" class="nav-icon" title="Settings">⚙️</a><a href="profile.html" class="nav-icon profile-nav-icon" title="Profile"><img src="/api/placeholder/36/36" alt="You"></a></div></div></nav>
+
+    <div class="matches-layout">
+        <main class="matches-main" role="main">
+            <div class="matches-header">
+                <h1>Your Matches <span class="match-count-badge" id="matchCountBadge">12</span></h1>
+                <select class="sort-select" id="sortSelect" aria-label="Sort matches">
+                    <option value="newest">Newest First</option>
+                    <option value="compatibility">Highest Compatibility</option>
+                    <option value="active">Recently Active</option>
+                </select>
+            </div>
+
+            <div class="new-matches-section" id="newMatchesSection">
+                <h2>✨ New Matches</h2>
+                <div class="new-matches-scroll" id="newMatchesScroll"></div>
+            </div>
+
+            <div class="filter-tabs" role="tablist">
+                <button class="filter-tab active" data-filter="all" role="tab">All Matches</button>
+                <button class="filter-tab" data-filter="online" role="tab">🟢 Online Now</button>
+                <button class="filter-tab" data-filter="super" role="tab">⭐ Super Likes</button>
+                <button class="filter-tab" data-filter="recent" role="tab">Recently Active</button>
+            </div>
+
+            <div class="matches-grid" id="matchesGrid"></div>
+
+            <div class="load-more" id="loadMore"><button>Load More Matches</button></div>
+
+            <div class="empty-matches" id="emptyMatches" style="display:none">
+                <div class="icon">💫</div>
+                <h3>No matches yet</h3>
+                <p>Keep swiping to find your perfect match! Great connections are just around the corner.</p>
+                <a href="discover.html" class="cta-button">Start Discovering</a>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const { Security, Toast, generateAvatarURL } = window.Validate;
+
+    const matches = [
+        {name:'Sofia Chen',age:26,location:'San Francisco, CA',distance:3,compatibility:97,verified:true,online:true,superLike:true,lastActive:'Just now',interests:['Technology','Food','Art'],isNew:true,matchDate:'2 hours ago'},
+        {name:'Luna Kim',age:27,location:'Palo Alto, CA',distance:15,compatibility:93,verified:true,online:true,superLike:false,lastActive:'5 min ago',interests:['Art','Travel','Photography'],isNew:true,matchDate:'5 hours ago'},
+        {name:'Alex Morgan',age:27,location:'San Francisco, CA',distance:5,compatibility:95,verified:true,online:true,superLike:true,lastActive:'Active now',interests:['Photography','Travel','Food'],isNew:true,matchDate:'Yesterday'},
+        {name:'Daniel Park',age:30,location:'Fremont, CA',distance:20,compatibility:92,verified:true,online:false,superLike:false,lastActive:'2 hours ago',interests:['Music','Cooking','Fitness'],isNew:false,matchDate:'2 days ago'},
+        {name:'Priya Sharma',age:23,location:'Sunnyvale, CA',distance:14,compatibility:90,verified:false,online:false,superLike:false,lastActive:'4 hours ago',interests:['Gaming','Technology','Art'],isNew:false,matchDate:'3 days ago'},
+        {name:'James Rivera',age:29,location:'Oakland, CA',distance:8,compatibility:94,verified:true,online:false,superLike:true,lastActive:'1 hour ago',interests:['Music','Fitness','Photography'],isNew:true,matchDate:'Today'},
+        {name:'Marcus Thompson',age:31,location:'San Jose, CA',distance:18,compatibility:89,verified:true,online:false,superLike:false,lastActive:'Yesterday',interests:['Technology','Food','Travel'],isNew:false,matchDate:'4 days ago'},
+        {name:'Elena Vasquez',age:25,location:'Santa Cruz, CA',distance:35,compatibility:88,verified:true,online:true,superLike:false,lastActive:'Active now',interests:['Sports','Travel','Photography'],isNew:false,matchDate:'5 days ago'},
+        {name:'Oliver Brooks',age:28,location:'Mountain View, CA',distance:22,compatibility:86,verified:false,online:false,superLike:false,lastActive:'3 hours ago',interests:['Technology','Fitness','Movies'],isNew:false,matchDate:'1 week ago'},
+        {name:'Aisha Patel',age:24,location:'Berkeley, CA',distance:12,compatibility:91,verified:false,online:true,superLike:false,lastActive:'Just now',interests:['Reading','Travel','Music'],isNew:true,matchDate:'Today'},
+        {name:'Liam Chen',age:26,location:'Daly City, CA',distance:10,compatibility:85,verified:true,online:false,superLike:false,lastActive:'6 hours ago',interests:['Cooking','Music','Travel'],isNew:false,matchDate:'1 week ago'},
+        {name:'Maya Anderson',age:25,location:'Redwood City, CA',distance:17,compatibility:87,verified:true,online:false,superLike:false,lastActive:'Yesterday',interests:['Fitness','Photography','Food'],isNew:false,matchDate:'2 weeks ago'},
+    ];
+
+    // New matches bubbles
+    function renderNewBubbles() {
+        const scroll = document.getElementById('newMatchesScroll');
+        scroll.innerHTML = '';
+        matches.filter(m => m.isNew).forEach(m => {
+            const a = document.createElement('a');
+            a.className = 'match-bubble';
+            a.href = 'profile.html';
+            const wrap = document.createElement('div');
+            wrap.className = 'bubble-img-wrap';
+            const img = document.createElement('img');
+            img.src = generateAvatarURL(m.name, 150);
+            img.alt = m.name;
+            wrap.appendChild(img);
+            if (m.online) { const dot = document.createElement('div'); dot.className = 'bubble-online'; wrap.appendChild(dot); }
+            const badge = document.createElement('div'); badge.className = 'bubble-new'; badge.textContent = 'NEW'; wrap.appendChild(badge);
+            a.appendChild(wrap);
+            const name = document.createElement('span'); name.className = 'bubble-name'; name.textContent = m.name.split(' ')[0]; a.appendChild(name);
+            scroll.appendChild(a);
+        });
+    }
+
+    // Match cards
+    function renderGrid(data) {
+        const grid = document.getElementById('matchesGrid');
+        grid.innerHTML = '';
+        document.getElementById('matchCountBadge').textContent = data.length;
+        if (data.length === 0) { document.getElementById('emptyMatches').style.display = ''; document.getElementById('loadMore').style.display = 'none'; return; }
+        document.getElementById('emptyMatches').style.display = 'none';
+        document.getElementById('loadMore').style.display = '';
+
+        data.forEach((m, i) => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.setAttribute('role', 'article');
+
+            const photo = document.createElement('div');
+            photo.className = 'match-card-photo';
+            const img = document.createElement('img');
+            img.src = generateAvatarURL(m.name, 400);
+            img.alt = m.name; img.loading = 'lazy';
+            photo.appendChild(img);
+            const overlay = document.createElement('div');
+            overlay.className = 'gradient-overlay';
+            photo.appendChild(overlay);
+            const compat = document.createElement('div');
+            compat.className = 'card-compat';
+            compat.textContent = m.compatibility + '% Match';
+            photo.appendChild(compat);
+            if (m.verified) { const v = document.createElement('div'); v.className = 'card-verified'; v.textContent = '✓ Verified'; photo.appendChild(v); }
+            const activeDot = document.createElement('div');
+            activeDot.className = 'card-active-dot' + (m.online ? '' : ' offline');
+            activeDot.textContent = m.online ? 'Online' : m.lastActive;
+            photo.appendChild(activeDot);
+            card.appendChild(photo);
+
+            const info = document.createElement('div');
+            info.className = 'match-card-info';
+            const h3 = document.createElement('h3');
+            h3.textContent = m.name + ', ';
+            const ageSpan = document.createElement('span');
+            ageSpan.textContent = m.age;
+            h3.appendChild(ageSpan);
+            info.appendChild(h3);
+            const loc = document.createElement('div');
+            loc.className = 'card-location';
+            loc.textContent = '📍 ' + m.location + ' · ' + m.distance + ' mi';
+            info.appendChild(loc);
+            const tags = document.createElement('div');
+            tags.className = 'card-interests';
+            m.interests.slice(0, 3).forEach(interest => {
+                const tag = document.createElement('span');
+                tag.className = 'card-interest-tag';
+                tag.textContent = interest;
+                tags.appendChild(tag);
+            });
+            info.appendChild(tags);
+            const lastA = document.createElement('div');
+            lastA.className = 'card-last-active';
+            lastA.textContent = 'Matched ' + m.matchDate + (m.superLike ? ' · ⭐ Super Liked' : '');
+            info.appendChild(lastA);
+            const actions = document.createElement('div');
+            actions.className = 'card-actions';
+            const msgBtn = document.createElement('a');
+            msgBtn.className = 'cta-button';
+            msgBtn.href = 'chat.html';
+            msgBtn.textContent = 'Message';
+            actions.appendChild(msgBtn);
+            const viewBtn = document.createElement('a');
+            viewBtn.className = 'secondary-btn';
+            viewBtn.href = 'profile.html';
+            viewBtn.textContent = 'Profile';
+            actions.appendChild(viewBtn);
+            const moreBtn = document.createElement('button');
+            moreBtn.className = 'more-btn';
+            moreBtn.textContent = '⋯';
+            moreBtn.setAttribute('aria-label', 'More options');
+            actions.appendChild(moreBtn);
+            info.appendChild(actions);
+            card.appendChild(info);
+            grid.appendChild(card);
+        });
+
+        // Stagger animation
+        if (typeof gsap !== 'undefined') {
+            gsap.from('.match-card', {opacity: 0, y: 20, duration: 0.4, stagger: 0.06, ease: 'power2.out'});
+        }
+    }
+
+    // Sorting
+    function sortMatches(data, by) {
+        const d = [...data];
+        if (by === 'compatibility') d.sort((a, b) => b.compatibility - a.compatibility);
+        else if (by === 'active') d.sort((a, b) => (b.online ? 1 : 0) - (a.online ? 1 : 0));
+        return d;
+    }
+
+    // Filtering
+    function filterMatches(filter) {
+        if (filter === 'online') return matches.filter(m => m.online);
+        if (filter === 'super') return matches.filter(m => m.superLike);
+        if (filter === 'recent') return matches.filter(m => m.online || m.lastActive.includes('hour') || m.lastActive === 'Just now');
+        return matches;
+    }
+
+    let currentFilter = 'all', currentSort = 'newest';
+
+    document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            renderGrid(sortMatches(filterMatches(currentFilter), currentSort));
+        });
+    });
+
+    document.getElementById('sortSelect').addEventListener('change', e => {
+        currentSort = e.target.value;
+        renderGrid(sortMatches(filterMatches(currentFilter), currentSort));
+    });
+
+    // Init
+    renderNewBubbles();
+    renderGrid(matches);
+});
+</script>
+</body>
+</html>

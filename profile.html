@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Validate</title>
+    <meta name="description" content="View and manage your Validate dating profile.">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="shared.js" defer></script>
+    <style>
+    .profile-layout{padding:4.5rem 2rem 3rem;min-height:100vh}
+    .profile-main{max-width:900px;margin:0 auto}
+    .profile-hero{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-xl);overflow:hidden;text-align:center;margin-bottom:1.5rem;position:relative}
+    .profile-cover{height:280px;background:linear-gradient(135deg,rgba(255,51,153,.25),rgba(102,0,255,.25),rgba(247,0,255,.15));position:relative;overflow:hidden}
+    .profile-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(10,0,20,.8))}
+    .cover-edit{position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,.4);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius-md);padding:.45rem .85rem;color:white;font-size:.75rem;cursor:pointer;z-index:2;font-family:inherit;transition:all .2s}
+    .cover-edit:hover{background:rgba(255,51,153,.3);border-color:var(--primary)}
+    .profile-avatar-wrap{position:relative;width:150px;height:150px;margin:-80px auto 1rem;z-index:2}
+    .profile-avatar{width:150px;height:150px;border-radius:50%;border:4px solid var(--bg);object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+    .avatar-badge{position:absolute;bottom:6px;right:6px;width:32px;height:32px;background:linear-gradient(135deg,var(--success),#00aa66);border:3px solid var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:white}
+    .profile-name{font-size:1.75rem;font-weight:800;margin:.25rem 0 .15rem;padding-top:.25rem}
+    .profile-name span{font-weight:400;color:rgba(255,255,255,.55);font-size:1.4rem}
+    .profile-location{font-size:.85rem;color:rgba(255,255,255,.45);margin-bottom:.15rem;display:flex;align-items:center;justify-content:center;gap:.3rem}
+    .profile-online{font-size:.75rem;color:var(--success);margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.35rem}
+    .profile-online::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--success)}
+    .profile-action-bar{display:flex;justify-content:center;gap:.75rem;padding:0 2rem 1.5rem}
+    .profile-action-bar .cta-button{padding:.6rem 1.75rem;font-size:.85rem}
+    .profile-action-bar .outline-btn{padding:.6rem 1.25rem;background:none;border:1px solid var(--glass-border);border-radius:var(--radius-full);color:rgba(255,255,255,.6);cursor:pointer;font-family:inherit;font-size:.85rem;transition:all .2s}
+    .profile-action-bar .outline-btn:hover{border-color:white;color:white}
+    .profile-action-bar .more-btn{width:38px;height:38px;border-radius:50%;background:none;border:1px solid var(--glass-border);color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s}
+    .profile-action-bar .more-btn:hover{border-color:white;color:white}
+
+    .profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+    .profile-stat{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.25rem;text-align:center;transition:transform .2s}
+    .profile-stat:hover{transform:translateY(-2px)}
+    .profile-stat .stat-num{font-size:1.75rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .profile-stat .stat-label{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.15rem}
+
+    .profile-section{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.25rem}
+    .profile-section h2{font-size:1.05rem;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+    .profile-section h2 .section-count{font-size:.75rem;color:rgba(255,255,255,.35);font-weight:400}
+    .bio-text{font-size:.9rem;color:rgba(255,255,255,.7);line-height:1.7}
+
+    .interests-grid{display:flex;flex-wrap:wrap;gap:.4rem}
+    .interest-tag{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;background:rgba(255,51,153,.06);border:1px solid rgba(255,51,153,.12);border-radius:var(--radius-full);font-size:.8rem;color:rgba(255,255,255,.7);transition:all .2s}
+    .interest-tag:hover{background:rgba(255,51,153,.12);border-color:rgba(255,51,153,.25)}
+
+    .prompt-card{background:rgba(255,51,153,.04);border:1px solid rgba(255,51,153,.08);border-radius:var(--radius-lg);padding:1.15rem 1.35rem;margin-bottom:.75rem;transition:transform .2s}
+    .prompt-card:hover{transform:translateX(4px)}
+    .prompt-card:last-child{margin-bottom:0}
+    .prompt-q{font-size:.75rem;color:var(--primary);font-weight:600;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.03em}
+    .prompt-a{font-size:.9rem;color:rgba(255,255,255,.7);line-height:1.5;font-style:italic}
+
+    .profile-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+    .gallery-item{aspect-ratio:1;border-radius:var(--radius-md);overflow:hidden;background:linear-gradient(135deg,#1a0a2e,#2a1040);cursor:pointer;transition:transform .25s;position:relative}
+    .gallery-item:hover{transform:scale(1.03)}
+    .gallery-item img{width:100%;height:100%;object-fit:cover}
+    .gallery-item .gallery-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:1.5rem}
+    .gallery-item:hover .gallery-overlay{opacity:1}
+
+    .personality-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+    .personality-item{text-align:center;padding:.85rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-md)}
+    .personality-item .pers-icon{font-size:1.5rem;margin-bottom:.3rem}
+    .personality-item .pers-label{font-size:.65rem;color:rgba(255,255,255,.35);margin-bottom:.15rem;text-transform:uppercase;letter-spacing:.05em}
+    .personality-item .pers-value{font-size:.85rem;font-weight:600}
+
+    .activity-list{list-style:none;padding:0}
+    .activity-list li{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;font-size:.85rem;color:rgba(255,255,255,.55)}
+    .activity-list li span{color:rgba(255,255,255,.25);font-size:.75rem}
+
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(10px)}
+    .lightbox.visible{opacity:1;pointer-events:auto}
+    .lightbox img{max-width:90vw;max-height:85vh;border-radius:var(--radius-lg);object-fit:contain}
+    .lightbox-close{position:absolute;top:1.5rem;right:1.5rem;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;font-size:1.3rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+    .lightbox-close:hover{background:rgba(255,51,153,.3);border-color:var(--primary)}
+
+    @media(max-width:768px){.profile-layout{padding:4.5rem 1rem 2rem}.profile-cover{height:200px}.profile-avatar-wrap{width:120px;height:120px;margin-top:-65px}.profile-avatar{width:120px;height:120px}.profile-stats{grid-template-columns:repeat(3,1fr);gap:.5rem}.profile-gallery{grid-template-columns:repeat(2,1fr)}.personality-grid{grid-template-columns:1fr 1fr}}
+    </style>
+</head>
+<body>
+    <nav class="app-nav"><div class="nav-content"><a href="index.html" class="logo">Validate</a><div class="nav-icons"><a href="discover.html" class="nav-icon" title="Discover">💖</a><a href="matches.html" class="nav-icon" title="Matches">✨</a><a href="chat.html" class="nav-icon" title="Chat">💬</a><a href="home.html" class="nav-icon" title="Browse">🏠</a><a href="settings.html" class="nav-icon" title="Settings">⚙️</a><a href="profile.html" class="nav-icon profile-nav-icon" title="Profile" style="opacity:1" aria-current="page"><img src="/api/placeholder/36/36" alt="You"></a></div></div></nav>
+
+    <div class="profile-layout">
+        <main class="profile-main" role="main">
+            <!-- Hero Card -->
+            <div class="profile-hero" id="profileHero">
+                <div class="profile-cover">
+                    <button class="cover-edit" aria-label="Change cover photo">📷 Change Cover</button>
+                </div>
+                <div class="profile-avatar-wrap">
+                    <img class="profile-avatar" id="profileAvatar" src="" alt="Alex Morgan">
+                    <div class="avatar-badge" title="Verified">✓</div>
+                </div>
+                <h1 class="profile-name" id="profileName">Alex Morgan, <span>27</span></h1>
+                <div class="profile-location" id="profileLocation">📍 San Francisco, CA</div>
+                <div class="profile-online">Active now</div>
+                <div class="profile-action-bar">
+                    <a href="profile-create.html" class="cta-button">Edit Profile</a>
+                    <button class="outline-btn" id="shareBtn" aria-label="Share profile">Share</button>
+                    <button class="more-btn" aria-label="More options">⋯</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="profile-stats">
+                <div class="profile-stat"><div class="stat-num">48</div><div class="stat-label">Matches</div></div>
+                <div class="profile-stat"><div class="stat-num">156</div><div class="stat-label">Likes</div></div>
+                <div class="profile-stat"><div class="stat-num">1.2K</div><div class="stat-label">Profile Views</div></div>
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-section" id="bioSection">
+                <h2>About Me</h2>
+                <p class="bio-text" id="bioText">Freelance photographer chasing golden hours and great coffee. Dog dad to a corgi named Pixel. I believe the best photos happen when you stop trying to pose and start being real. Looking for someone who appreciates both spontaneous road trips and lazy Sunday mornings.</p>
+            </div>
+
+            <!-- Interests -->
+            <div class="profile-section">
+                <h2>Interests <span class="section-count">8 shared with you</span></h2>
+                <div class="interests-grid" id="interestsGrid"></div>
+            </div>
+
+            <!-- Prompts -->
+            <div class="profile-section">
+                <h2>Conversation Starters</h2>
+                <div id="promptsContainer"></div>
+            </div>
+
+            <!-- Photos -->
+            <div class="profile-section">
+                <h2>Photos <span class="section-count">6</span></h2>
+                <div class="profile-gallery" id="photoGallery"></div>
+            </div>
+
+            <!-- Personality -->
+            <div class="profile-section">
+                <h2>Personality Insights</h2>
+                <div class="personality-grid" id="personalityGrid"></div>
+            </div>
+
+            <!-- Activity -->
+            <div class="profile-section">
+                <h2>Activity</h2>
+                <ul class="activity-list">
+                    <li>📅 Member since <strong>January 2025</strong></li>
+                    <li>🕐 Last active: <strong>Just now</strong></li>
+                    <li>⚡ Response rate: <strong>95%</strong></li>
+                    <li>💬 Average reply time: <strong>Under 1 hour</strong></li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+        <img id="lightboxImg" src="" alt="Full size photo">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const { Toast, generateAvatarURL } = window.Validate;
+
+    // Set avatar
+    document.getElementById('profileAvatar').src = generateAvatarURL('Alex Morgan', 300);
+    document.querySelector('.profile-nav-icon img').src = generateAvatarURL('Alex Morgan', 72);
+
+    // Interests
+    const interests = [
+        {emoji:'📸',name:'Photography'},{emoji:'✈️',name:'Travel'},{emoji:'☕',name:'Coffee'},
+        {emoji:'🎨',name:'Art'},{emoji:'🎵',name:'Music'},{emoji:'🍜',name:'Food'},
+        {emoji:'🐕',name:'Dogs'},{emoji:'💻',name:'Technology'},{emoji:'📚',name:'Reading'},
+        {emoji:'🏃',name:'Fitness'},{emoji:'🎬',name:'Movies'},{emoji:'🌿',name:'Nature'}
+    ];
+    const grid = document.getElementById('interestsGrid');
+    interests.forEach(i => {
+        const tag = document.createElement('span');
+        tag.className = 'interest-tag';
+        tag.textContent = i.emoji + ' ' + i.name;
+        grid.appendChild(tag);
+    });
+
+    // Prompts
+    const prompts = [
+        {q:'My ideal first date...',a:'Golden hour at a rooftop café, then wandering through a night market. No phones, just real conversation.'},
+        {q:'A fact about me that surprises people...',a:'I once got lost in Tokyo at 3am and stumbled into the best ramen shop of my entire life. Best mistake I ever made.'},
+        {q:"I'm looking for someone who...",a:'Can match my energy on an adventure but also enjoys doing absolutely nothing on a rainy day.'}
+    ];
+    const container = document.getElementById('promptsContainer');
+    prompts.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'prompt-card';
+        const q = document.createElement('div');
+        q.className = 'prompt-q';
+        q.textContent = p.q;
+        card.appendChild(q);
+        const a = document.createElement('div');
+        a.className = 'prompt-a';
+        a.textContent = p.a;
+        card.appendChild(a);
+        container.appendChild(card);
+    });
+
+    // Photos
+    const gallery = document.getElementById('photoGallery');
+    const photoNames = ['Alex Travel', 'Alex Coffee', 'Alex Dog', 'Alex Art', 'Alex Nature', 'Alex City'];
+    photoNames.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        const img = document.createElement('img');
+        img.src = generateAvatarURL(name, 400);
+        img.alt = name;
+        img.loading = 'lazy';
+        item.appendChild(img);
+        const overlay = document.createElement('div');
+        overlay.className = 'gallery-overlay';
+        overlay.textContent = '🔍';
+        item.appendChild(overlay);
+        item.addEventListener('click', () => openLightbox(img.src));
+        gallery.appendChild(item);
+    });
+
+    // Personality
+    const personality = [
+        {icon:'🧠',label:'MBTI Type',value:'ENFP'},
+        {icon:'💬',label:'Communication',value:'Expressive'},
+        {icon:'❤️',label:'Love Language',value:'Quality Time'},
+        {icon:'🌅',label:'Chronotype',value:'Early Bird'},
+        {icon:'🎯',label:'Attachment',value:'Secure'},
+        {icon:'🌊',label:'Energy',value:'Ambivert'}
+    ];
+    const persGrid = document.getElementById('personalityGrid');
+    personality.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'personality-item';
+        item.innerHTML = `<div class="pers-icon">${p.icon}</div><div class="pers-label">${p.label}</div><div class="pers-value">${p.value}</div>`;
+        persGrid.appendChild(item);
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    function openLightbox(src) {
+        document.getElementById('lightboxImg').src = src;
+        lightbox.classList.add('visible');
+    }
+    document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('visible'));
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('visible'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') lightbox.classList.remove('visible'); });
+
+    // Share
+    document.getElementById('shareBtn').addEventListener('click', () => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(() => Toast.show('Profile link copied! 🔗', 'success'));
+        } else {
+            Toast.show('Share: ' + window.location.href, 'info');
+        }
+    });
+
+    // Entrance animations
+    if (typeof gsap !== 'undefined') {
+        gsap.from('.profile-hero', {opacity: 0, y: 20, duration: 0.5, ease: 'power2.out'});
+        gsap.from('.profile-stat', {opacity: 0, y: 15, duration: 0.4, stagger: 0.08, ease: 'power2.out', delay: 0.2});
+        gsap.from('.profile-section', {opacity: 0, y: 15, duration: 0.4, stagger: 0.1, ease: 'power2.out', delay: 0.35});
+    }
+});
+</script>
+</body>
+</html>

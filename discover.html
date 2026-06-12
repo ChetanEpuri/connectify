@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover | Validate</title>
+    <meta name="description" content="Discover compatible matches with Validate's AI-powered swiping experience.">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="shared.js" defer></script>
+    <style>
+    .discover-layout{display:grid;grid-template-columns:300px 1fr 260px;gap:1.5rem;padding:5rem 1.5rem 2rem;min-height:100vh;max-width:1600px;margin:0 auto}
+    .discover-sidebar,.discover-info{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.5rem;height:fit-content;position:sticky;top:5rem}
+    .discover-sidebar h3{font-size:1rem;margin-bottom:1.25rem;color:rgba(255,255,255,.8)}
+    .filter-group{margin-bottom:1.25rem}
+    .filter-group label{display:block;font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em}
+    .filter-group input[type=range]{width:100%;accent-color:var(--primary);background:transparent;margin:.25rem 0}
+    .filter-group .range-value{text-align:center;font-size:.85rem;color:var(--primary);font-weight:600}
+    .filter-group select,.filter-group input[type=number]{width:100%;padding:.5rem .75rem;background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;font-size:.85rem}
+    .filter-group select:focus,.filter-group input:focus{border-color:var(--primary);outline:none}
+    .interest-checks{display:flex;flex-wrap:wrap;gap:.4rem}
+    .interest-check{display:flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);border-radius:var(--radius-full);font-size:.75rem;cursor:pointer;transition:all .2s}
+    .interest-check:hover{border-color:var(--primary)}
+    .interest-check input{display:none}
+    .interest-check.active{background:rgba(255,51,153,.1);border-color:var(--primary);color:var(--primary)}
+    .filter-actions{display:flex;gap:.75rem;margin-top:1rem}
+    .filter-actions .cta-button{flex:1;padding:.6rem;font-size:.8rem}
+    .filter-reset{background:none;border:none;color:rgba(255,255,255,.4);font-size:.8rem;cursor:pointer;font-family:inherit;text-decoration:underline}
+    .filter-reset:hover{color:white}
+    .age-inputs{display:flex;gap:.5rem;align-items:center}
+    .age-inputs input{width:50%;text-align:center}
+    .age-inputs span{color:rgba(255,255,255,.3);font-size:.75rem}
+
+    .swipe-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem 0}
+    .swipe-stack{position:relative;width:400px;height:580px;margin:0 auto}
+    .swipe-card{position:absolute;width:100%;height:100%;border-radius:var(--radius-xl);overflow:hidden;background:var(--card-bg);border:1px solid var(--glass-border);cursor:grab;user-select:none;will-change:transform;transition:box-shadow .3s}
+    .swipe-card:hover{box-shadow:0 20px 60px rgba(255,51,153,.12)}
+    .swipe-card.behind{transform:scale(.95) translateY(12px);z-index:1;pointer-events:none;filter:brightness(.7)}
+    .swipe-card.far-behind{transform:scale(.9) translateY(24px);z-index:0;pointer-events:none;filter:brightness(.5)}
+    .swipe-card-photo{height:58%;background:linear-gradient(135deg,#1a0a2e,#2a1040);position:relative;overflow:hidden}
+    .swipe-card-photo img{width:100%;height:100%;object-fit:cover}
+    .swipe-card-photo .gradient-overlay{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(10,0,20,.95))}
+    .match-badge{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,var(--primary),var(--secondary));padding:.35rem .75rem;border-radius:var(--radius-full);font-size:.75rem;font-weight:700;letter-spacing:.02em;backdrop-filter:blur(8px);z-index:2}
+    .verified-badge{position:absolute;top:1rem;left:1rem;background:rgba(0,204,136,.15);border:1px solid rgba(0,204,136,.3);padding:.25rem .6rem;border-radius:var(--radius-full);font-size:.7rem;color:var(--success);z-index:2;display:flex;align-items:center;gap:.25rem}
+    .swipe-card-info{padding:1.25rem;display:flex;flex-direction:column;gap:.5rem}
+    .swipe-card-info h3{font-size:1.35rem;font-weight:700}
+    .swipe-card-info h3 span{font-weight:400;color:rgba(255,255,255,.6);font-size:1.1rem}
+    .swipe-card-location{font-size:.8rem;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:.3rem}
+    .swipe-card-bio{font-size:.85rem;color:rgba(255,255,255,.6);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .swipe-card-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+    .swipe-tag{padding:.25rem .6rem;background:rgba(255,51,153,.06);border:1px solid rgba(255,51,153,.12);border-radius:var(--radius-full);font-size:.7rem;color:rgba(255,255,255,.65)}
+    .swipe-prompt{margin-top:.25rem;padding:.6rem .8rem;background:rgba(255,255,255,.02);border-radius:var(--radius-md);border-left:2px solid var(--primary)}
+    .swipe-prompt .prompt-q{font-size:.7rem;color:var(--primary);margin-bottom:.2rem;font-weight:600}
+    .swipe-prompt .prompt-a{font-size:.8rem;color:rgba(255,255,255,.7);font-style:italic}
+
+    .swipe-label{position:absolute;top:40%;font-size:2.5rem;font-weight:800;padding:.5rem 1.5rem;border-radius:var(--radius-md);border:4px solid;z-index:10;opacity:0;pointer-events:none;letter-spacing:.05em}
+    .swipe-label.like{right:1.5rem;color:var(--success);border-color:var(--success);transform:rotate(15deg)}
+    .swipe-label.nope{left:1.5rem;color:var(--danger);border-color:var(--danger);transform:rotate(-15deg)}
+    .swipe-label.super{top:2rem;left:50%;transform:translateX(-50%);color:#FFD700;border-color:#FFD700}
+
+    .swipe-actions{display:flex;gap:.85rem;margin-top:1.25rem;justify-content:center;align-items:center}
+    .swipe-btn{width:52px;height:52px;border-radius:50%;border:2px solid var(--glass-border);background:var(--glass-bg);font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;backdrop-filter:blur(10px);color:white;position:relative}
+    .swipe-btn:hover{transform:scale(1.15)}
+    .swipe-btn:active{transform:scale(.95)}
+    .swipe-nope:hover{border-color:var(--danger);box-shadow:0 0 25px rgba(255,68,68,.25);color:var(--danger)}
+    .swipe-like:hover{border-color:var(--success);box-shadow:0 0 25px rgba(0,204,136,.25);color:var(--success)}
+    .swipe-super:hover{border-color:#FFD700;box-shadow:0 0 25px rgba(255,215,0,.25);color:#FFD700}
+    .swipe-undo:hover{border-color:var(--accent);box-shadow:0 0 25px rgba(247,0,255,.2);color:var(--accent)}
+    .swipe-save:hover{border-color:#4da6ff;box-shadow:0 0 25px rgba(77,166,255,.2);color:#4da6ff}
+    .swipe-btn.primary{width:60px;height:60px;font-size:1.5rem;border-width:2px}
+    .keyboard-hints{display:flex;gap:1.25rem;margin-top:.75rem;font-size:.7rem;color:rgba(255,255,255,.25)}
+    .keyboard-hints kbd{padding:.15rem .4rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;font-family:inherit;font-size:.65rem}
+
+    .discover-info h4{font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.5rem}
+    .stat-item{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-md);padding:.75rem;text-align:center}
+    .stat-item .stat-num{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .stat-item .stat-label{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:.15rem}
+    .tip-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-md);padding:.75rem;margin-bottom:.5rem;font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.5}
+    .tip-card strong{color:rgba(255,255,255,.8)}
+    .boost-card{background:linear-gradient(135deg,rgba(255,51,153,.15),rgba(102,0,255,.15));border:1px solid rgba(255,51,153,.2);border-radius:var(--radius-lg);padding:1.25rem;text-align:center;margin-top:1rem}
+    .boost-card h4{font-size:.95rem;margin-bottom:.3rem;color:white}
+    .boost-card p{font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:.75rem}
+    .boost-card .cta-button{font-size:.8rem;padding:.5rem 1.25rem}
+
+    .match-overlay{position:fixed;inset:0;background:radial-gradient(ellipse at center,rgba(255,51,153,.2),rgba(10,0,20,.97));z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(20px);opacity:0;pointer-events:none;transition:opacity .4s}
+    .match-overlay.visible{opacity:1;pointer-events:auto}
+    .match-overlay h2{font-size:3rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem}
+    .match-avatars{display:flex;gap:2rem;align-items:center;margin-bottom:2rem}
+    .match-avatars img{width:100px;height:100px;border-radius:50%;border:3px solid var(--primary);object-fit:cover}
+    .match-avatars .heart-icon{font-size:2rem;animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+    .match-overlay .cta-button{margin-bottom:.75rem}
+    .match-overlay .secondary-btn{background:none;border:1px solid var(--glass-border);color:rgba(255,255,255,.6);padding:.6rem 1.5rem;border-radius:var(--radius-full);cursor:pointer;font-family:inherit;font-size:.9rem;transition:all .2s}
+    .match-overlay .secondary-btn:hover{border-color:white;color:white}
+
+    .empty-state{text-align:center;padding:4rem 2rem}
+    .empty-state .icon{font-size:4rem;margin-bottom:1rem}
+    .empty-state h3{font-size:1.5rem;margin-bottom:.5rem}
+    .empty-state p{color:rgba(255,255,255,.5);margin-bottom:1.5rem;max-width:400px;margin-left:auto;margin-right:auto}
+    .empty-actions{display:flex;gap:.75rem;justify-content:center}
+
+    @media(max-width:1200px){.discover-layout{grid-template-columns:1fr;max-width:480px}.discover-sidebar,.discover-info{display:none}}
+    @media(max-width:480px){.swipe-stack{width:calc(100vw - 2rem);height:520px}}
+    </style>
+</head>
+<body>
+    <nav class="app-nav"><div class="nav-content"><a href="index.html" class="logo">Validate</a><div class="nav-icons"><a href="discover.html" class="nav-icon" title="Discover" style="opacity:1" aria-current="page">💖</a><a href="matches.html" class="nav-icon" title="Matches">✨</a><a href="chat.html" class="nav-icon" title="Chat">💬</a><a href="home.html" class="nav-icon" title="Browse">🏠</a><a href="settings.html" class="nav-icon" title="Settings">⚙️</a><a href="profile.html" class="nav-icon profile-nav-icon" title="Profile"><img src="/api/placeholder/36/36" alt="You"></a></div></div></nav>
+
+    <div class="discover-layout">
+        <!-- Left: Filters -->
+        <aside class="discover-sidebar" role="complementary" aria-label="Discovery filters">
+            <h3>Discovery Preferences</h3>
+            <div class="filter-group">
+                <label for="distRange">Distance</label>
+                <input type="range" id="distRange" min="1" max="100" value="25" aria-label="Distance in miles">
+                <div class="range-value"><span id="distVal">25</span> miles</div>
+            </div>
+            <div class="filter-group">
+                <label>Age Range</label>
+                <div class="age-inputs">
+                    <input type="number" id="ageMin" min="18" max="65" value="21" aria-label="Minimum age">
+                    <span>to</span>
+                    <input type="number" id="ageMax" min="18" max="65" value="35" aria-label="Maximum age">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="genderPref">Show Me</label>
+                <select id="genderPref" aria-label="Gender preference">
+                    <option value="everyone">Everyone</option>
+                    <option value="women">Women</option>
+                    <option value="men">Men</option>
+                    <option value="nonbinary">Non-binary</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="lookingFor">Looking For</label>
+                <select id="lookingFor" aria-label="Relationship type">
+                    <option value="any">Open to All</option>
+                    <option value="relationship">Relationship</option>
+                    <option value="casual">Casual</option>
+                    <option value="friendship">Friendship</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Interests</label>
+                <div class="interest-checks" id="interestFilters"></div>
+            </div>
+            <div class="filter-actions">
+                <button class="cta-button" id="applyFilters">Apply</button>
+                <button class="filter-reset" id="resetFilters">Reset</button>
+            </div>
+        </aside>
+
+        <!-- Center: Swipe -->
+        <main class="swipe-container" role="main" aria-label="Profile cards">
+            <div class="swipe-stack" id="swipeStack">
+                <div class="swipe-label nope" id="labelNope">NOPE</div>
+                <div class="swipe-label like" id="labelLike">LIKE</div>
+                <div class="swipe-label super" id="labelSuper">SUPER</div>
+            </div>
+            <div class="swipe-actions" id="swipeActions">
+                <button class="swipe-btn swipe-nope" id="btnNope" title="Pass (←)" aria-label="Pass">✕</button>
+                <button class="swipe-btn swipe-undo" id="btnUndo" title="Undo (Z)" aria-label="Undo">↩</button>
+                <button class="swipe-btn swipe-super primary" id="btnSuper" title="Super Like (↑)" aria-label="Super Like">⭐</button>
+                <button class="swipe-btn swipe-save" id="btnSave" title="Save (S)" aria-label="Save for later">🔖</button>
+                <button class="swipe-btn swipe-like" id="btnLike" title="Like (→)" aria-label="Like">💚</button>
+            </div>
+            <div class="keyboard-hints" aria-hidden="true">
+                <span><kbd>←</kbd> Nope</span>
+                <span><kbd>↑</kbd> Super</span>
+                <span><kbd>→</kbd> Like</span>
+                <span><kbd>Z</kbd> Undo</span>
+                <span><kbd>S</kbd> Save</span>
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none">
+                <div class="icon">💫</div>
+                <h3>You've seen everyone nearby!</h3>
+                <p>Check back later for new profiles, or expand your discovery preferences.</p>
+                <div class="empty-actions">
+                    <a href="settings.html" class="cta-button">Adjust Settings</a>
+                    <button class="learn-more-btn" onclick="location.reload()">Refresh</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right: Info -->
+        <aside class="discover-info" role="complementary" aria-label="Discovery stats">
+            <h4>Today's Activity</h4>
+            <div class="stats-grid">
+                <div class="stat-item"><div class="stat-num" id="likesSent">0</div><div class="stat-label">Likes Sent</div></div>
+                <div class="stat-item"><div class="stat-num" id="matchCount">0</div><div class="stat-label">Matches</div></div>
+                <div class="stat-item"><div class="stat-num" id="viewCount">0</div><div class="stat-label">Views</div></div>
+                <div class="stat-item"><div class="stat-num" id="superCount">0</div><div class="stat-label">Super Likes</div></div>
+            </div>
+            <h4>Quick Tips</h4>
+            <div class="tip-card"><strong>💡 Pro tip:</strong> Profiles with prompts get 3x more matches. Add yours in settings!</div>
+            <div class="tip-card"><strong>🎯 Be specific:</strong> Mention shared interests in your first message for better responses.</div>
+            <div class="boost-card">
+                <h4>⚡ Boost Your Profile</h4>
+                <p>Get 10x more visibility for 30 minutes</p>
+                <button class="cta-button">Activate Boost</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Match overlay -->
+    <div class="match-overlay" id="matchOverlay" role="dialog" aria-modal="true" aria-label="Match celebration">
+        <h2>It's a Match! 💕</h2>
+        <div class="match-avatars">
+            <img id="matchAvatarYou" src="" alt="You">
+            <span class="heart-icon">❤️</span>
+            <img id="matchAvatarThem" src="" alt="Match">
+        </div>
+        <button class="cta-button" id="matchMessage">Send a Message</button>
+        <button class="secondary-btn" id="matchContinue">Keep Swiping</button>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const { Security, Toast, generateAvatarURL } = window.Validate;
+    const stack = document.getElementById('swipeStack');
+    const emptyState = document.getElementById('emptyState');
+    const overlay = document.getElementById('matchOverlay');
+
+    const INTERESTS = ['Travel','Music','Sports','Art','Technology','Food','Fitness','Photography','Gaming','Reading','Movies','Cooking'];
+    const filtersEl = document.getElementById('interestFilters');
+    INTERESTS.forEach(name => {
+        const label = document.createElement('label');
+        label.className = 'interest-check';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.value = name;
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(name));
+        label.addEventListener('click', () => setTimeout(() => label.classList.toggle('active', cb.checked), 0));
+        filtersEl.appendChild(label);
+    });
+
+    const profiles = [
+        {name:'Sofia Chen',age:26,location:'San Francisco, CA',distance:3,bio:'Neuroscience researcher by day, amateur chef by night. Looking for someone who appreciates both deep conversations and terrible food puns.',interests:['Technology','Food','Reading','Art'],compatibility:97,verified:true,prompt:{q:'My ideal first date...',a:'A farmers market morning followed by cooking together.'}},
+        {name:'James Rivera',age:29,location:'Oakland, CA',distance:8,bio:'UX designer who believes in human-centered everything. Weekend trail runner and vinyl collector.',interests:['Music','Fitness','Photography','Technology'],compatibility:94,verified:true,prompt:{q:'A fact about me that surprises people...',a:'I once hiked the entire Pacific Crest Trail in 4 months.'}},
+        {name:'Aisha Patel',age:24,location:'Berkeley, CA',distance:12,bio:'PhD student in astrophysics. I can explain black holes but I still can\'t parallel park.',interests:['Reading','Travel','Music','Gaming'],compatibility:91,verified:false,prompt:{q:"I'm looking for...",a:'Someone who wants to stargaze on weeknights and brunch on weekends.'}},
+        {name:'Marcus Thompson',age:31,location:'San Jose, CA',distance:18,bio:'Startup founder and hopeless optimist. I make the world\'s best espresso martini — you be the judge.',interests:['Technology','Food','Fitness','Travel'],compatibility:89,verified:true,prompt:{q:'My love language is...',a:'Quality time and acts of service (read: I cook, you do dishes).'}},
+        {name:'Luna Kim',age:27,location:'Palo Alto, CA',distance:15,bio:'Product manager who paints watercolors on the weekend. Fluent in 3 languages and sarcasm.',interests:['Art','Travel','Photography','Movies'],compatibility:93,verified:true,prompt:{q:'The way to my heart is...',a:'Through a good museum exhibit and an honest conversation.'}},
+        {name:'Oliver Brooks',age:28,location:'Mountain View, CA',distance:22,bio:'AI researcher who somehow still has time for rock climbing and B-movie marathons.',interests:['Technology','Fitness','Movies','Gaming'],compatibility:86,verified:false,prompt:{q:'My biggest flex...',a:'I can solve a Rubik\'s cube in under a minute while explaining attention mechanisms.'}},
+        {name:'Elena Vasquez',age:25,location:'Santa Cruz, CA',distance:35,bio:'Marine biologist and surf instructor. I talk about octopuses way too much and I\'m not sorry.',interests:['Sports','Travel','Photography','Cooking'],compatibility:88,verified:true,prompt:{q:'Together we could...',a:'Explore tide pools, cook sustainable seafood, and debate ocean documentaries.'}},
+        {name:'Daniel Park',age:30,location:'Fremont, CA',distance:20,bio:'Emergency room doctor with a passion for stand-up comedy. Saving lives and killing at open mics.',interests:['Music','Cooking','Reading','Fitness'],compatibility:92,verified:true,prompt:{q:"I'm convinced that...",a:'Laughter is actually the best medicine (but don\'t skip your prescriptions).'}},
+        {name:'Priya Sharma',age:23,location:'Sunnyvale, CA',distance:14,bio:'Fresh CS grad building my own game studio. Looking for a player two who appreciates indie games and chai.',interests:['Gaming','Technology','Art','Music'],compatibility:90,verified:false,prompt:{q:'My weekend looks like...',a:'Game jams, farmer\'s market visits, and spontaneous road trips.'}},
+        {name:'Alex Morgan',age:27,location:'San Francisco, CA',distance:5,bio:'Freelance photographer chasing golden hours and great coffee. Dog dad to a corgi named Pixel.',interests:['Photography','Travel','Food','Art'],compatibility:95,verified:true,prompt:{q:'Best travel story...',a:'Got lost in Tokyo at 3am, found the best ramen shop of my life.'}}
+    ];
+
+    let currentIndex = 0, undoStack = [], likesSent = 0, matchesCount = 0, supersCount = 0;
+    const savedProfiles = [];
+
+    function renderCard(profile, zClass = '') {
+        const card = document.createElement('div');
+        card.className = 'swipe-card' + (zClass ? ' ' + zClass : '');
+        card.setAttribute('role', 'article');
+        card.setAttribute('aria-label', `Profile: ${profile.name}, ${profile.age}`);
+
+        const photo = document.createElement('div');
+        photo.className = 'swipe-card-photo';
+        const img = document.createElement('img');
+        img.src = generateAvatarURL(profile.name, 400);
+        img.alt = profile.name;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        photo.appendChild(img);
+        const overlay = document.createElement('div');
+        overlay.className = 'gradient-overlay';
+        photo.appendChild(overlay);
+
+        const badge = document.createElement('div');
+        badge.className = 'match-badge';
+        badge.textContent = profile.compatibility + '% Match';
+        photo.appendChild(badge);
+
+        if (profile.verified) {
+            const vb = document.createElement('div');
+            vb.className = 'verified-badge';
+            vb.textContent = '✓ Verified';
+            photo.appendChild(vb);
+        }
+
+        card.appendChild(photo);
+
+        const info = document.createElement('div');
+        info.className = 'swipe-card-info';
+
+        const h3 = document.createElement('h3');
+        h3.textContent = profile.name + ', ';
+        const ageSpan = document.createElement('span');
+        ageSpan.textContent = profile.age;
+        h3.appendChild(ageSpan);
+        info.appendChild(h3);
+
+        const loc = document.createElement('div');
+        loc.className = 'swipe-card-location';
+        loc.textContent = '📍 ' + profile.location + ' · ' + profile.distance + ' mi away';
+        info.appendChild(loc);
+
+        const bio = document.createElement('p');
+        bio.className = 'swipe-card-bio';
+        bio.textContent = profile.bio;
+        info.appendChild(bio);
+
+        const tags = document.createElement('div');
+        tags.className = 'swipe-card-tags';
+        profile.interests.forEach(i => {
+            const tag = document.createElement('span');
+            tag.className = 'swipe-tag';
+            tag.textContent = i;
+            tags.appendChild(tag);
+        });
+        info.appendChild(tags);
+
+        if (profile.prompt) {
+            const prompt = document.createElement('div');
+            prompt.className = 'swipe-prompt';
+            const pq = document.createElement('div');
+            pq.className = 'prompt-q';
+            pq.textContent = profile.prompt.q;
+            prompt.appendChild(pq);
+            const pa = document.createElement('div');
+            pa.className = 'prompt-a';
+            pa.textContent = profile.prompt.a;
+            prompt.appendChild(pa);
+            info.appendChild(prompt);
+        }
+
+        card.appendChild(info);
+        return card;
+    }
+
+    function renderStack() {
+        // Remove existing cards (not labels)
+        stack.querySelectorAll('.swipe-card').forEach(c => c.remove());
+        const remaining = profiles.slice(currentIndex);
+        if (remaining.length === 0) {
+            emptyState.style.display = '';
+            document.getElementById('swipeActions').style.display = 'none';
+            document.querySelector('.keyboard-hints').style.display = 'none';
+            return;
+        }
+        // Show up to 3 cards
+        const show = remaining.slice(0, 3);
+        show.forEach((p, i) => {
+            const cls = i === 1 ? 'behind' : i === 2 ? 'far-behind' : '';
+            const card = renderCard(p, cls);
+            card.style.zIndex = 10 - i;
+            stack.insertBefore(card, stack.firstChild);
+        });
+        setupDrag();
+    }
+
+    function swipe(direction) {
+        const topCard = stack.querySelector('.swipe-card:not(.behind):not(.far-behind)');
+        if (!topCard) return;
+
+        const profile = profiles[currentIndex];
+        undoStack.push({index: currentIndex, profile});
+
+        const labelEl = direction === 'like' ? document.getElementById('labelLike')
+            : direction === 'nope' ? document.getElementById('labelNope')
+            : document.getElementById('labelSuper');
+
+        if (typeof gsap !== 'undefined') {
+            gsap.to(labelEl, {opacity: 1, duration: 0.15});
+            const x = direction === 'like' ? 600 : direction === 'nope' ? -600 : 0;
+            const y = direction === 'super' ? -600 : 0;
+            const rotate = direction === 'like' ? 20 : direction === 'nope' ? -20 : 0;
+            gsap.to(topCard, {
+                x, y, rotation: rotate, opacity: 0, duration: 0.45, ease: 'power2.in',
+                onComplete: () => {
+                    gsap.set(labelEl, {opacity: 0});
+                    topCard.remove();
+                    currentIndex++;
+                    updateStats(direction);
+                    if (direction !== 'nope' && Math.random() < 0.2) showMatch(profile);
+                    renderStack();
+                }
+            });
+        } else {
+            topCard.remove();
+            currentIndex++;
+            updateStats(direction);
+            renderStack();
+        }
+    }
+
+    function undo() {
+        if (undoStack.length === 0) { Toast.show('Nothing to undo', 'info'); return; }
+        const last = undoStack.pop();
+        currentIndex = last.index;
+        Toast.show('Profile restored', 'info');
+        renderStack();
+    }
+
+    function saveProfile() {
+        const profile = profiles[currentIndex];
+        if (!profile) return;
+        savedProfiles.push(profile);
+        Toast.show('Profile saved for later 🔖', 'success');
+    }
+
+    function updateStats(dir) {
+        if (dir === 'like') { likesSent++; document.getElementById('likesSent').textContent = likesSent; }
+        if (dir === 'super') { supersCount++; document.getElementById('superCount').textContent = supersCount; likesSent++; document.getElementById('likesSent').textContent = likesSent; }
+        document.getElementById('viewCount').textContent = currentIndex;
+    }
+
+    function showMatch(profile) {
+        matchesCount++;
+        document.getElementById('matchCount').textContent = matchesCount;
+        document.getElementById('matchAvatarYou').src = generateAvatarURL('You', 200);
+        document.getElementById('matchAvatarThem').src = generateAvatarURL(profile.name, 200);
+        overlay.classList.add('visible');
+        Toast.show("It's a match! 💕", 'success', 4000);
+    }
+
+    document.getElementById('matchMessage').addEventListener('click', () => { overlay.classList.remove('visible'); window.location.href = 'chat.html'; });
+    document.getElementById('matchContinue').addEventListener('click', () => overlay.classList.remove('visible'));
+
+    // Buttons
+    document.getElementById('btnNope').addEventListener('click', () => swipe('nope'));
+    document.getElementById('btnLike').addEventListener('click', () => swipe('like'));
+    document.getElementById('btnSuper').addEventListener('click', () => swipe('super'));
+    document.getElementById('btnUndo').addEventListener('click', undo);
+    document.getElementById('btnSave').addEventListener('click', saveProfile);
+
+    // Keyboard
+    document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        if (e.key === 'ArrowLeft') swipe('nope');
+        else if (e.key === 'ArrowRight') swipe('like');
+        else if (e.key === 'ArrowUp') { e.preventDefault(); swipe('super'); }
+        else if (e.key === 'z' || e.key === 'Z') undo();
+        else if (e.key === 's' || e.key === 'S') saveProfile();
+    });
+
+    // Drag/swipe
+    function setupDrag() {
+        const topCard = stack.querySelector('.swipe-card:not(.behind):not(.far-behind)');
+        if (!topCard) return;
+        let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false;
+
+        topCard.addEventListener('mousedown', onStart);
+        topCard.addEventListener('touchstart', onStart, {passive: true});
+
+        function onStart(e) {
+            isDragging = true;
+            topCard.style.cursor = 'grabbing';
+            const point = e.touches ? e.touches[0] : e;
+            startX = point.clientX; startY = point.clientY;
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('touchmove', onMove, {passive: true});
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchend', onEnd);
+        }
+
+        function onMove(e) {
+            if (!isDragging) return;
+            const point = e.touches ? e.touches[0] : e;
+            currentX = point.clientX - startX;
+            currentY = point.clientY - startY;
+            const rotate = currentX * 0.08;
+            topCard.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+
+            const labelLike = document.getElementById('labelLike');
+            const labelNope = document.getElementById('labelNope');
+            labelLike.style.opacity = Math.min(currentX / 100, 1);
+            labelNope.style.opacity = Math.min(-currentX / 100, 1);
+        }
+
+        function onEnd() {
+            isDragging = false;
+            topCard.style.cursor = 'grab';
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchend', onEnd);
+
+            document.getElementById('labelLike').style.opacity = '0';
+            document.getElementById('labelNope').style.opacity = '0';
+
+            if (currentX > 100) { swipe('like'); }
+            else if (currentX < -100) { swipe('nope'); }
+            else if (currentY < -80) { swipe('super'); }
+            else {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(topCard, {x: 0, y: 0, rotation: 0, duration: 0.4, ease: 'back.out(1.5)'});
+                } else {
+                    topCard.style.transform = '';
+                }
+            }
+            currentX = 0; currentY = 0;
+        }
+    }
+
+    // Distance slider
+    document.getElementById('distRange').addEventListener('input', e => {
+        document.getElementById('distVal').textContent = e.target.value;
+    });
+
+    // Init
+    renderStack();
+    if (typeof gsap !== 'undefined') {
+        gsap.from('.discover-sidebar', {x: -30, opacity: 0, duration: 0.6, ease: 'power2.out', delay: 0.2});
+        gsap.from('.discover-info', {x: 30, opacity: 0, duration: 0.6, ease: 'power2.out', delay: 0.3});
+    }
+});
+</script>
+</body>
+</html>
